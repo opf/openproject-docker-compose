@@ -34,6 +34,24 @@ You can also set those variables into an `.env` file in your current working
 directory, and Docker Compose will pick it up automatically. See `.env.example`
 for details.
 
+## Upgrade
+
+Go to the compose folder:
+
+    cd openproject/compose
+
+Retrieve any changes from the `openproject-deploy` repository:
+
+    git pull origin stable/11
+
+Make sure you are using the latest version of the Docker images:
+
+    docker-compose pull
+
+Relaunch the containers:
+
+    docker-compose up -d
+
 ## Uninstall
 
 You can remove the stack with:
