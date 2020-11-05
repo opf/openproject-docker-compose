@@ -10,6 +10,10 @@ Go to the compose folder:
 
     cd openproject/compose
 
+Make sure you are using the latest version of the Docker images:
+
+    docker-compose pull
+
 Launch the containers:
 
     docker-compose up -d
