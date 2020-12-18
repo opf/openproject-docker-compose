@@ -48,7 +48,7 @@ services:
   proxy:
     <<: *image
     <<: *restart_policy
-    command: "./docker/proxy"
+    command: "./docker/prod/proxy"
     ports:
       - "${PORT:-8080}:80"
     environment:
@@ -61,7 +61,7 @@ services:
 
   web:
     <<: *app
-    command: "./docker/web"
+    command: "./docker/prod/web"
     networks:
       - frontend
       - backend
@@ -72,7 +72,7 @@ services:
 
   worker:
     <<: *app
-    command: "./docker/worker"
+    command: "./docker/prod/worker"
     networks:
       - backend
     depends_on:
@@ -82,7 +82,7 @@ services:
 
   cron:
     <<: *app
-    command: "./docker/cron"
+    command: "./docker/prod/cron"
     networks:
       - backend
     depends_on:
@@ -92,7 +92,7 @@ services:
 
   seeder:
     <<: *app
-    command: "./docker/seeder"
+    command: "./docker/prod/seeder"
     restart: on-failure
     networks:
       - backend
