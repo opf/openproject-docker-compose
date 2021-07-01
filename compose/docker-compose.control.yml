@@ -1,0 +1,51 @@
+version: "3.7"
+
+volumes:
+  pgupgrade:
+
+services:
+  db:
+    restart: "no"
+    entrypoint: ["echo", "disabled"]
+  upgrade:
+    restart: "no"
+    build:
+      context: ./control
+    environment:
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - "pgdata:/var/lib/postgresql/data"
+      - "./control:/control"
+    entrypoint: ["/control/upgrade/entrypoint.sh"]
+  backup:
+    restart: "no"
+    build:
+      context: ./control
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      OPDATA: /var/openproject/assets
+    volumes:
+      - "pgdata:/var/lib/postgresql/data"
+      - "opdata:/var/openproject/assets"
+      - "./backups:/backups"
+      - "./control:/control"
+    entrypoint: ["/control/backup/entrypoint.sh"]
+  web:
+    restart: "no"
+    entrypoint: ["echo", "disabled"]
+  worker:
+    restart: "no"
+    entrypoint: ["echo", "disabled"]
+  cron:
+    restart: "no"
+    entrypoint: ["echo", "disabled"]
+  seeder:
+    restart: "no"
+    entrypoint: ["echo", "disabled"]
+  proxy:
+    restart: "no"
+    entrypoint: ["echo", "disabled"]
+  cache:
+    restart: "no"
+    entrypoint: ["echo", "disabled"]
+
