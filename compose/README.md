@@ -4,7 +4,7 @@
 
 Clone this repository:
 
-    git clone https://github.com/opf/openproject-deploy --depth=1 --branch=stable/11 openproject
+    git clone https://github.com/opf/openproject-deploy --depth=1 --branch=stable/12 openproject
 
 Go to the compose folder: 
 
@@ -42,7 +42,7 @@ Go to the compose folder:
 
 Retrieve any changes from the `openproject-deploy` repository:
 
-    git pull origin stable/11
+    git pull origin stable/12
 
 Make sure you are using the latest version of the Docker images:
 
