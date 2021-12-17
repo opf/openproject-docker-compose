@@ -22,7 +22,6 @@ x-op-app: &app
     DATABASE_URL: "${DATABASE_URL:-postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true}"
     RAILS_MIN_THREADS: 4
     RAILS_MAX_THREADS: 16
-    USE_PUMA: "true"
     # set to true to enable the email receiving feature. See ./docker/cron for more options
     IMAP_ENABLED: "${IMAP_ENABLED:-false}"
   volumes:
@@ -30,7 +29,7 @@ x-op-app: &app
 
 services:
   db:
-    image: postgres:10
+    image: postgres:13
     <<: *restart_policy
     stop_grace_period: "3s"
     volumes:
@@ -71,6 +70,18 @@ services:
       - db
       - cache
       - seeder
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health_checks/default"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+  autoheal:
+    image: willfarrell/autoheal
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      AUTOHEAL_CONTAINER_LABEL: all
 
   worker:
     <<: *app
