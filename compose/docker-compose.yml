@@ -76,8 +76,9 @@ services:
       timeout: 3s
       retries: 3
       start_period: 30s
+
   autoheal:
-    image: willfarrell/autoheal
+    image: willfarrell/autoheal:1.2.0
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
