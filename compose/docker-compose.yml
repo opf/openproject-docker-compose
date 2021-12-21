@@ -71,7 +71,7 @@ services:
       - cache
       - seeder
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80/health_checks/default"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health_checks/default"]
       interval: 10s
       timeout: 3s
       retries: 3
