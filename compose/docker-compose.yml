@@ -70,10 +70,12 @@ services:
       - db
       - cache
       - seeder
+    labels:
+      - autoheal=true
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health_checks/default"]
-      interval: 10s
-      timeout: 3s
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health_checks/default"]
+      interval: 1s
+      timeout: 1s
       retries: 3
       start_period: 30s
 
@@ -82,7 +84,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
-      AUTOHEAL_CONTAINER_LABEL: all
+      AUTOHEAL_CONTAINER_LABEL: autoheal
 
   worker:
     <<: *app
