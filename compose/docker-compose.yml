@@ -73,7 +73,7 @@ services:
     labels:
       - autoheal=true
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-/}/health_checks/default"]
+      test: ["CMD", "curl", "-f", "http://localhost:8080${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default"]
       interval: 10s
       timeout: 3s
       retries: 3
