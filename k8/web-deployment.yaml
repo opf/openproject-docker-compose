@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    autoheal: "true"
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.26.1 (HEAD)
+  labels:
+    io.kompose.service: web
+  name: web
+  namespace: openproject
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: web
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        autoheal: "true"
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.26.1 (HEAD)
+      labels:
+        io.kompose.network/backend: "true"
+        io.kompose.network/frontend: "true"
+        io.kompose.service: web
+    spec:
+      containers:
+        - args:
+            - ./docker/prod/web
+          env:
+            - name: DATABASE_URL
+              value: postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true
+            - name: IMAP_ENABLED
+              value: "false"
+            - name: OPENPROJECT_CACHE__MEMCACHE__SERVER
+              value: cache:11211
+            - name: OPENPROJECT_RAILS__RELATIVE__URL__ROOT
+            - name: RAILS_CACHE_STORE
+              value: memcache
+            - name: RAILS_MAX_THREADS
+              value: "16"
+            - name: RAILS_MIN_THREADS
+              value: "4"
+          ports:
+            - containerPort: 8080
+          image: openproject/community:12
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health_checks/default
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health_checks/default
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: web
+          resources: {}
+          # resources:
+          #   limits:
+          #     cpu: 2000m
+          #     memory: 512Mi
+          #   requests:
+          #     cpu: 100m
+          #     memory: 64Mi
+          volumeMounts:
+            - mountPath: /var/openproject/assets
+              name: opdata
+      restartPolicy: Always
+      volumes:
+        - name: opdata
+          persistentVolumeClaim:
+            claimName: opdata
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.26.1 (HEAD)
+  labels:
+    io.kompose.service: web
+  name: web
+  namespace: openproject
+spec:
+  ports:
+    - name: "80"
+      port: 80
+      targetPort: 8080
+  selector:
+    io.kompose.service: web
+status:
+  loadBalancer: {}
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-ingress
+  namespace: openproject
+spec:
+  rules:
+    - host: openproject.[host].com #TODO: update hostmanme
+      http:
+        paths:
+          - backend:
+              service:
+                name: web
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific

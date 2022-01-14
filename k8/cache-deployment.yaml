@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.26.1 (HEAD)
+  labels:
+    io.kompose.service: cache
+  name: cache
+  namespace: openproject
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: cache
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.26.1 (HEAD)
+      labels:
+        io.kompose.network/backend: "true"
+        io.kompose.service: cache
+    spec:
+      containers:
+        - image: memcached
+          name: cache
+          ports:
+            - containerPort: 11211
+          resources: {}
+          # resources:
+          #   limits:
+          #     cpu: 2000m
+          #     memory: 512Mi
+          #   requests:
+          #     cpu: 100m
+          #     memory: 64Mi
+      restartPolicy: Always
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cache
+  namespace: openproject
+spec:
+  type: ClusterIP
+  selector:
+    io.kompose.service: cache
+  ports:
+    - port: 11211
+      targetPort: 11211

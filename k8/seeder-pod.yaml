@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.26.1 (HEAD)
+  labels:
+    io.kompose.network/backend: "true"
+    io.kompose.service: seeder
+  name: seeder
+  namespace: openproject
+spec:
+  containers:
+    - args:
+        - ./docker/prod/seeder
+      env:
+        - name: DATABASE_URL
+          value: postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true
+        - name: IMAP_ENABLED
+          value: "false"
+        - name: OPENPROJECT_CACHE__MEMCACHE__SERVER
+          value: cache:11211
+        - name: OPENPROJECT_RAILS__RELATIVE__URL__ROOT
+        - name: RAILS_CACHE_STORE
+          value: memcache
+        - name: RAILS_MAX_THREADS
+          value: "16"
+        - name: RAILS_MIN_THREADS
+          value: "4"
+      image: openproject/community:12
+      name: seeder
+      resources:
+            limits:
+              cpu: 2000m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 64Mi
+      volumeMounts:
+        - mountPath: /var/openproject/assets
+          name: opdata
+  restartPolicy: OnFailure
+  volumes:
+    - name: opdata
+      persistentVolumeClaim:
+        claimName: opdata
+status: {}
