@@ -35,7 +35,7 @@ services:
     volumes:
       - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
     environment:
-      POSTGRES_PASSWORD: p4ssw0rd
+      POSTGRES_PASSWORD: "${POSTGRES_PSWD:-p4ssw0rd}"
       POSTGRES_DB: openproject
     networks:
       - backend
@@ -112,3 +112,4 @@ services:
     restart: on-failure
     networks:
       - backend
+
