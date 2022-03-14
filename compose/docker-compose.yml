@@ -37,6 +37,11 @@ services:
     environment:
       POSTGRES_PASSWORD: p4ssw0rd
       POSTGRES_DB: openproject
+      # Use subdirectory for PGDATA so that mounted volumes don't have to be empty.
+      # For example, this is important when mounting an ext4 file system where
+      # a lost+found directory will be automatically created once mounted.
+      # This would then cause initdb to fail due to the PGDATA directory not being empty.
+      PGDATA: /var/lib/postgresql/data/pgdata
     networks:
       - backend
 
