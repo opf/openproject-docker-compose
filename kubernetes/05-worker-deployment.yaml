@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    openproject.service: worker
+  name: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      openproject.service: worker
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        openproject.network/backend: "true"
+        openproject.service: worker
+    spec:
+      containers:
+        - args:
+            - ./docker/prod/worker
+          env:
+            - name: DATABASE_URL
+              value: postgres://postgres:p4ssw0rd@$(DB_SERVICE_HOST):$(DB_SERVICE_PORT)/openproject?pool=20&encoding=unicode&reconnect=true
+            - name: IMAP_ENABLED
+              value: "false"
+            - name: OPENPROJECT_CACHE__MEMCACHE__SERVER
+              value: $(CACHE_SERVICE_HOST):$(CACHE_SERVICE_PORT)
+            - name: OPENPROJECT_RAILS__RELATIVE__URL__ROOT
+            - name: RAILS_CACHE_STORE
+              value: memcache
+            - name: RAILS_MAX_THREADS
+              value: "16"
+            - name: RAILS_MIN_THREADS
+              value: "4"
+          image: openproject/community:12
+          name: worker
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/openproject/assets
+              name: opdata
+      restartPolicy: Always
+      volumes:
+        - name: opdata
+          persistentVolumeClaim:
+            claimName: opdata
+status: {}
