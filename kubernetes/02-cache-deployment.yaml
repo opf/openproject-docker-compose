@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    openproject.service: cache
+  name: cache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      openproject.service: cache
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        openproject.network/backend: "true"
+        openproject.service: cache
+    spec:
+      containers:
+        - image: memcached
+          name: cache
+          resources: {}
+      restartPolicy: Always
+status: {}
