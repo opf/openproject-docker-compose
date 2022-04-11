@@ -22,7 +22,8 @@ After a while, OpenProject should be up and running on <http://localhost:8080>.
 
 ## Configuration
 
-If you want to specify a different port, you can do so with:
+By default, the application will be bound to localhost:8080 on the docker host only. If you need to publicly expose the port 
+or change the port to something else entirely, you can do so with:
 
     PORT=4000 docker-compose up -d
 
