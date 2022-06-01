@@ -7,7 +7,7 @@ This is an example setup of OpenProject on Kubernetes.
 Clone this repository:
 
 ```
-git clone https://github.com/opf/openproject-deploy --depth=1 --branch=dev openproject
+git clone https://github.com/opf/openproject-deploy --depth=1 --branch=stable/12 openproject
 ```
 
 Go to the compose folder:
