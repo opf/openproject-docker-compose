@@ -34,6 +34,8 @@ spec:
               value: "16"
             - name: RAILS_MIN_THREADS
               value: "4"
+            - name: OPENPROJECT_EDITION
+              value: classic
           image: openproject/community:12
           name: worker
           resources: {}
