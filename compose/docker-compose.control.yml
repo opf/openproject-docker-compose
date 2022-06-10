@@ -14,7 +14,7 @@ services:
     environment:
       PGDATA: /var/lib/postgresql/data
     volumes:
-      - "pgdata:/var/lib/postgresql/data"
+      - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
       - "./control:/control"
     entrypoint: ["/control/upgrade/entrypoint.sh"]
   backup:
@@ -25,8 +25,8 @@ services:
       PGDATA: /var/lib/postgresql/data
       OPDATA: /var/openproject/assets
     volumes:
-      - "pgdata:/var/lib/postgresql/data"
-      - "opdata:/var/openproject/assets"
+      - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
+      - "${OPDATA:-opdata}:/var/openproject/assets"
       - "./backups:/backups"
       - "./control:/control"
     entrypoint: ["/control/backup/entrypoint.sh"]

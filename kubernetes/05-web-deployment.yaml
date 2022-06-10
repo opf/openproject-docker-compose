@@ -36,7 +36,7 @@ spec:
             - name: RAILS_MIN_THREADS
               value: "4"
             - name: OPENPROJECT_EDITION
-              value: classic
+              value: standard
           image: openproject/community:12
           ports:
             - containerPort: 8080
