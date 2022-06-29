@@ -13,8 +13,7 @@ x-op-restart-policy: &restart_policy
 x-op-image: &image
   image: openproject/community:${TAG:-12}
 x-op-app: &app
-  <<: *image
-  <<: *restart_policy
+  <<: [*image, *restart_policy]
   environment:
     RAILS_CACHE_STORE: "memcache"
     OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
@@ -47,8 +46,7 @@ services:
       - backend
 
   proxy:
-    <<: *image
-    <<: *restart_policy
+    <<: [*image, *restart_policy]
     command: "./docker/prod/proxy"
     ports:
       - "${PORT:-8080}:80"
