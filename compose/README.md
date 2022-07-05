@@ -65,3 +65,7 @@ You can look at the logs with:
     docker-compose logs -n 1000
 
 For the complete documentation, please refer to https://docs.openproject.org/installation-and-operations/.
+
+### Network issues
+
+If you're running into weird network issues and timeouts such as the one described in [OP#42802](https://community.openproject.org/work_packages/42802), you might have success in remove the two separate frontend and backend networks. This might be connected to using podman for orchestration, although we haven't been able to confirm this.
