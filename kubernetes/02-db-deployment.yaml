@@ -23,6 +23,8 @@ spec:
               value: openproject
             - name: POSTGRES_PASSWORD
               value: p4ssw0rd
+            - name: PGDATA
+              value: /var/lib/postgresql/data/openproject
           image: postgres:13
           ports:
             - containerPort: 5432
