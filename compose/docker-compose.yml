@@ -15,6 +15,9 @@ x-op-image: &image
 x-op-app: &app
   <<: [*image, *restart_policy]
   environment:
+    OPENPROJECT_HTTPS: "false"
+    OPENPROJECT_HOST__NAME: "localhost:8080"
+    OPENPROJECT_HSTS: "false"
     RAILS_CACHE_STORE: "memcache"
     OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
     OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
