@@ -20,19 +20,63 @@ Launch the containers:
 
 After a while, OpenProject should be up and running on <http://localhost:8080>.
 
+**HTTPS/SSL**
+
+By default OpenProject starts with the HTTPS option **enabled**, but it **does not** handle SSL termination itself.
+This is usually done separately via a [reverse proxy setup](https://www.openproject.org/docs/installation-and-operations/installation/docker/#apache-reverse-proxy-setup).
+Without this you will run into an `ERR_SSL_PROTOCOL_ERROR` when accessing OpenProject.
+
+See below how to disable HTTPS.
+
+**PORT**
+
+By default the port is bound to `0.0.0.0` means access to OpenProject will be public.
+See below how to change that.
+
 ## Configuration
+
+Environment variables can be added to `docker-compose.yml` under `x-op-app -> environment` to change
+OpenProject's configuration. Some are already defined and can be changed via the environment.
+
+You can pass those variables directly when starting the stack as follows.
+
+```
+VARIABLE=value docker-compose up -d
+```
+
+You can also put those variables into an `.env` file in your current working
+directory, and Docker Compose will pick it up automatically. See `.env.example`
+for details.
+
+## HTTPS
+
+You can disable OpenProject's HTTPS option via:
+
+```
+OPENPROJECT_HTTPS=false
+```
+
+## PORT
 
 If you want to specify a different port, you can do so with:
 
-    PORT=4000 docker-compose up -d
+```
+PORT=4000
+```
+
+If you don't want OpenProject to bind to `0.0.0.0` you can bind it to localhost only like this:
+
+```
+PORT=127.0.0.1:8080
+```
+
+## TAG
 
 If you want to specify a custom tag for the OpenProject docker image, you can do so with:
 
-    TAG=my-docker-tag docker-compose up -d
-
-You can also set those variables into an `.env` file in your current working
-directory, and Docker Compose will pick it up automatically. See `.env.example`
-for details.
+```
+TAG=my-docker-tag
+```
 
 ## Upgrade
 
