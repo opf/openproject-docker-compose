@@ -113,3 +113,14 @@ For the complete documentation, please refer to https://docs.openproject.org/ins
 ### Network issues
 
 If you're running into weird network issues and timeouts such as the one described in [OP#42802](https://community.openproject.org/work_packages/42802), you might have success in remove the two separate frontend and backend networks. This might be connected to using podman for orchestration, although we haven't been able to confirm this.
+
+
+### SMTP setup fails: Network is unreachable.
+
+Make sure your container has DNS resolution to access external SMTP server when set up as described in [OP#44515](https://community.openproject.org/work_packages/44515).
+
+```yml
+worker:
+   dns:    
+     - "Your DNS IP" # OR add a public DNS resolver like 8.8.8.8
+ ```
