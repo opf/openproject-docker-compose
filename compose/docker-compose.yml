@@ -13,15 +13,17 @@ x-op-restart-policy: &restart_policy
 x-op-image: &image
   image: openproject/community:${TAG:-12}
 x-op-app: &app
-  <<: *image
-  <<: *restart_policy
+  <<: [*image, *restart_policy]
   environment:
+    OPENPROJECT_HTTPS: "${OPENPROJECT_HTTPS:-true}"
+    OPENPROJECT_HOST__NAME: "${OPENPROJECT_HOST__NAME:-localhost:8080}"
+    OPENPROJECT_HSTS: "${OPENPROJECT_HSTS:-true}"
     RAILS_CACHE_STORE: "memcache"
     OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
     OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
     DATABASE_URL: "${DATABASE_URL:-postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true}"
-    RAILS_MIN_THREADS: 4
-    RAILS_MAX_THREADS: 16
+    RAILS_MIN_THREADS: ${RAILS_MIN_THREADS:-4}
+    RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-16}
     # set to true to enable the email receiving feature. See ./docker/cron for more options
     IMAP_ENABLED: "${IMAP_ENABLED:-false}"
   volumes:
@@ -47,8 +49,7 @@ services:
       - backend
 
   proxy:
-    <<: *image
-    <<: *restart_policy
+    <<: [*image, *restart_policy]
     command: "./docker/prod/proxy"
     ports:
       - "${PORT:-8080}:80"
@@ -85,6 +86,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
       AUTOHEAL_CONTAINER_LABEL: autoheal
+      AUTOHEAL_START_PERIOD: 600
+      AUTOHEAL_INTERVAL: 30
 
   worker:
     <<: *app
