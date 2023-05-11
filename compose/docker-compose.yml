@@ -86,6 +86,8 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     environment:
       AUTOHEAL_CONTAINER_LABEL: autoheal
+      AUTOHEAL_START_PERIOD: 600
+      AUTOHEAL_INTERVAL: 30
 
   worker:
     <<: *app
