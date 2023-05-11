@@ -14,6 +14,11 @@ Make sure you are using the latest version of the Docker images:
 
     docker-compose pull
 
+Copy the example `.env` file and edit any values you want to change:
+
+    cp .env.example .env
+    vim .env
+
 Launch the containers:
 
     docker-compose up -d
