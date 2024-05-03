@@ -4,31 +4,37 @@
 
 Clone this repository:
 
-    git clone https://github.com/opf/openproject-deploy --depth=1 --branch=stable/12 openproject
+```shell
+git clone https://github.com/opf/openproject-deploy --depth=1 --branch=stable/14 openproject
+```
 
-Go to the compose folder: 
+Go to the compose folder:
 
-    cd openproject/compose
-
-Make sure you are using the latest version of the Docker images:
-
-    docker-compose pull
+```shell
+cd openproject/compose
+```
 
 Copy the example `.env` file and edit any values you want to change:
 
-    cp .env.example .env
-    vim .env
+```shell
+cp .env.example .env
+vim .env
+```
 
-Launch the containers:
+Make sure you are using the latest version of the Docker images and launch the containers:
 
-    docker-compose up -d
+```shell
+docker compose pull
+docker compose up -d
+```
 
 After a while, OpenProject should be up and running on <http://localhost:8080>.
 
 **HTTPS/SSL**
 
-By default OpenProject starts with the HTTPS option **enabled**, but it **does not** handle SSL termination itself.
-This is usually done separately via a [reverse proxy setup](https://www.openproject.org/docs/installation-and-operations/installation/docker/#apache-reverse-proxy-setup).
+By default OpenProject starts with the HTTPS option **enabled**, but it **does not** handle SSL termination itself. This
+is usually done separately via a [reverse proxy
+setup](https://www.openproject.org/docs/installation-and-operations/installation/docker/#apache-reverse-proxy-setup).
 Without this you will run into an `ERR_SSL_PROTOCOL_ERROR` when accessing OpenProject.
 
 See below how to disable HTTPS.
@@ -117,15 +123,19 @@ For the complete documentation, please refer to https://docs.openproject.org/ins
 
 ### Network issues
 
-If you're running into weird network issues and timeouts such as the one described in [OP#42802](https://community.openproject.org/work_packages/42802), you might have success in remove the two separate frontend and backend networks. This might be connected to using podman for orchestration, although we haven't been able to confirm this.
+If you're running into weird network issues and timeouts such as the one described in
+[OP#42802](https://community.openproject.org/work_packages/42802), you might have success in remove the two separate
+frontend and backend networks. This might be connected to using podman for orchestration, although we haven't been able
+to confirm this.
 
 
 ### SMTP setup fails: Network is unreachable.
 
-Make sure your container has DNS resolution to access external SMTP server when set up as described in [OP#44515](https://community.openproject.org/work_packages/44515).
+Make sure your container has DNS resolution to access external SMTP server when set up as described in
+[OP#44515](https://community.openproject.org/work_packages/44515).
 
 ```yml
 worker:
-   dns:    
+   dns:
      - "Your DNS IP" # OR add a public DNS resolver like 8.8.8.8
  ```
