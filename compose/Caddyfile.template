@@ -1,0 +1,9 @@
+:80 {
+    root * /op
+
+    reverse_proxy * http://${APP_HOST}:8080
+
+    file_server
+
+    log
+}
