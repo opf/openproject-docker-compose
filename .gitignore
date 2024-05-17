@@ -1,2 +1,5 @@
+# Jetbrains IDE
+.idea/
+
 *.swp
 *.tar.gz

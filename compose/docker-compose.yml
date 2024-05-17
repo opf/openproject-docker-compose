@@ -5,11 +5,12 @@ networks:
 volumes:
   pgdata:
   opdata:
+  assets:
 
 x-op-restart-policy: &restart_policy
   restart: unless-stopped
 x-op-image: &image
-  image: openproject/openproject:${TAG:-14}
+  image: openproject/openproject:${TAG:-14-slim}
 x-op-app: &app
   <<: [*image, *restart_policy]
   environment:
@@ -47,17 +48,21 @@ services:
       - backend
 
   proxy:
-    <<: [*image, *restart_policy]
-    command: "./docker/prod/proxy"
+    image: caddy:2
+    <<: *restart_policy
+    command: "/usr/local/bin/proxy-entrypoint.sh"
     ports:
       - "${PORT:-8080}:80"
     environment:
       APP_HOST: web
-      OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
     depends_on:
       - web
     networks:
       - frontend
+    volumes:
+      - ./Caddyfile.template:/etc/caddy/Caddyfile.template:ro
+      - ./proxy-entrypoint.sh:/usr/local/bin/proxy-entrypoint.sh:ro
+      - assets:/public:ro
 
   web:
     <<: *app
@@ -77,6 +82,8 @@ services:
       timeout: 3s
       retries: 3
       start_period: 30s
+    volumes:
+      - assets:/app/public
 
   autoheal:
     image: willfarrell/autoheal:1.2.0
