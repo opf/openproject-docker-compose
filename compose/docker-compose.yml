@@ -10,7 +10,7 @@ volumes:
 x-op-restart-policy: &restart_policy
   restart: unless-stopped
 x-op-image: &image
-  image: openproject/openproject:${TAG:-14}
+  image: openproject/openproject:${TAG:-14-slim}
 x-op-app: &app
   <<: [*image, *restart_policy]
   environment:
@@ -62,7 +62,7 @@ services:
     volumes:
       - ./Caddyfile.template:/etc/caddy/Caddyfile.template:ro
       - ./proxy-entrypoint.sh:/usr/local/bin/proxy-entrypoint.sh:ro
-      - assets:/op:ro
+      - assets:/public:ro
 
   web:
     <<: *app
