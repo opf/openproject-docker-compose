@@ -1,7 +1,16 @@
 :80 {
     root * /public
 
-    reverse_proxy * http://${APP_HOST}:8080
+    reverse_proxy * http://${APP_HOST}:8080 {
+        # If your are using a reverse proxy in front of the compose stack, there might be
+        # an issue with caddy stripping certain X-Forwarded-* headers.
+        # For more information see: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#defaults
+        # It is strongly recommended to configure this via the server's global `trusted_proxies` directive.
+        # See: https://caddyserver.com/docs/caddyfile/options#trusted-proxies
+        # If you are aware of the risks, the simple option is to just add the needed `header_up` directives manually:
+        #
+        # header_up X-Forwarded-Proto "https"
+    }
 
     file_server
 
