@@ -30,7 +30,7 @@ docker compose up -d
 
 After a while, OpenProject should be up and running on <http://localhost:8080>.
 
-**HTTPS/SSL**
+### HTTPS/SSL
 
 By default OpenProject starts with the HTTPS option **enabled**, but it **does not** handle SSL termination itself. This
 is usually done separately via a [reverse proxy
@@ -39,7 +39,13 @@ Without this you will run into an `ERR_SSL_PROTOCOL_ERROR` when accessing OpenPr
 
 See below how to disable HTTPS.
 
-**PORT**
+Be aware that if you want to use the integrated Caddy proxy as a proxy with outbound connections, you need to rewrite the
+`Caddyfile`. In the default state, it is configured to forward the `X-Forwarded-*` headers from the reverse proxy in
+front of it and not setting them itself. This is considered a security flaw and should instead be solved by configuring
+`trusted_proxies` inside the `Caddyfile`. For more information read
+the [Caddy documentation](https://caddyserver.com/docs/caddyfile/directives/reverse_proxy).
+
+### PORT
 
 By default the port is bound to `0.0.0.0` means access to OpenProject will be public.
 See below how to change that.
@@ -128,7 +134,6 @@ If you're running into weird network issues and timeouts such as the one describ
 frontend and backend networks. This might be connected to using podman for orchestration, although we haven't been able
 to confirm this.
 
-
 ### SMTP setup fails: Network is unreachable.
 
 Make sure your container has DNS resolution to access external SMTP server when set up as described in
@@ -136,6 +141,6 @@ Make sure your container has DNS resolution to access external SMTP server when 
 
 ```yml
 worker:
-   dns:
-     - "Your DNS IP" # OR add a public DNS resolver like 8.8.8.8
+  dns:
+    - "Your DNS IP" # OR add a public DNS resolver like 8.8.8.8
  ```

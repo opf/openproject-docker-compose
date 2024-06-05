@@ -1,7 +1,17 @@
 :80 {
     root * /public
 
-    reverse_proxy * http://${APP_HOST}:8080
+    reverse_proxy * http://${APP_HOST}:8080 {
+        # The following directives are needed to make the proxy forward explicitly the X-Forwarded-* headers. If unset,
+        # Caddy will reset them. See: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#defaults
+        # This is needed, if you are using a reverse proxy in front of the compose stack and Caddy is NOT your first
+        # point of contact.
+        # When using Caddy is reachable as a first point of contact, it is highly recommended to configure the server's
+        # global `trusted_proxies` directive. See: https://caddyserver.com/docs/caddyfile/options#trusted-proxies
+
+        header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
+        header_up X-Forwarded-For {header.X-Forwarded-For}
+    }
 
     file_server
 
