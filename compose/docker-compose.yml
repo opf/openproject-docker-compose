@@ -50,7 +50,6 @@ services:
     build:
       context: ./proxy
       args:
-        OP_TAG: ${TAG:-14-slim}
         APP_HOST: web
     image: openproject/proxy:${TAG:-14-slim}
     <<: *restart_policy

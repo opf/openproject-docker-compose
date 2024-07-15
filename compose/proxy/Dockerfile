@@ -1,11 +1,4 @@
-ARG OP_TAG
-
-FROM openproject/openproject:${OP_TAG} AS openproject
-
-# -------------------------------------
 FROM caddy:2
-
-COPY --from=openproject /app/public /public
 
 COPY ./Caddyfile.template /etc/caddy/Caddyfile.template
 
