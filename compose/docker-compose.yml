@@ -5,7 +5,6 @@ networks:
 volumes:
   pgdata:
   opdata:
-  assets:
 
 x-op-restart-policy: &restart_policy
   restart: unless-stopped
@@ -25,6 +24,8 @@ x-op-app: &app
     RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-16}
     # set to true to enable the email receiving feature. See ./docker/cron for more options
     IMAP_ENABLED: "${IMAP_ENABLED:-false}"
+  volumes:
+    - "${OPDATA:-opdata}:/var/openproject/assets"
 
 services:
   db:
@@ -46,21 +47,18 @@ services:
       - backend
 
   proxy:
-    image: caddy:2
+    build:
+      context: ./proxy
+      args:
+        APP_HOST: web
+    image: openproject/proxy:${TAG:-14-slim}
     <<: *restart_policy
-    command: "/usr/local/bin/proxy-entrypoint.sh"
     ports:
       - "${PORT:-8080}:80"
-    environment:
-      APP_HOST: web
     depends_on:
       - web
     networks:
       - frontend
-    volumes:
-      - ./Caddyfile.template:/etc/caddy/Caddyfile.template:ro
-      - ./proxy-entrypoint.sh:/usr/local/bin/proxy-entrypoint.sh:ro
-      - assets:/public:ro
 
   web:
     <<: *app
@@ -80,9 +78,6 @@ services:
       timeout: 3s
       retries: 3
       start_period: 30s
-    volumes:
-      - "${OPDATA:-opdata}:/var/openproject/assets"
-      - assets:/app/public
 
   autoheal:
     image: willfarrell/autoheal:1.2.0
@@ -102,8 +97,6 @@ services:
       - db
       - cache
       - seeder
-    volumes:
-      - "${OPDATA:-opdata}:/var/openproject/assets"
 
   cron:
     <<: *app
@@ -114,8 +107,6 @@ services:
       - db
       - cache
       - seeder
-    volumes:
-      - "${OPDATA:-opdata}:/var/openproject/assets"
 
   seeder:
     <<: *app
@@ -123,6 +114,3 @@ services:
     restart: on-failure
     networks:
       - backend
-    volumes:
-      - "${OPDATA:-opdata}:/var/openproject/assets"
-
