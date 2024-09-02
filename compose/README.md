@@ -21,14 +21,23 @@ cp .env.example .env
 vim .env
 ```
 
-Make sure you are using the latest version of the Docker images and launch the containers:
+Next you start up the containers in the background while making sure to pull the latest versions of all used images.
 
 ```shell
-docker compose pull
-docker compose up -d
+docker compose up -d --build --pull always
 ```
 
 After a while, OpenProject should be up and running on <http://localhost:8080>.
+
+### Troubleshooting
+
+**pull access denied for openproject/proxy, repository does not exist or may require 'docker login': denied: requested access to the resource is denied**
+
+If you encounter this after `docker compose up` this is merely a warning which can be ignored.
+
+If this happens during `docker compose pull` this is simply a warning as well.
+But it will result in the command's exit code to be a failure even though all images are pulled.
+To prevent this you can add the `--ignore-buildable` option, running `docker compose pull  --ignore-buildable`.
 
 ### HTTPS/SSL
 
