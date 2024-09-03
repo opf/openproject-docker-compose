@@ -1,5 +1,6 @@
 # OpenProject Deploy
 
-Recipes and examples for deploying OpenProject using Docker, Docker Compose, Kubernetes, etc.
+Recipes and examples for deploying OpenProject.
 
 * [Docker Compose](./compose/)
+* [Kubernetes](./kubernetes/)
