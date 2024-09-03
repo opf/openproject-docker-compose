@@ -1,5 +1,3 @@
-# Jetbrains IDE
-.idea/
+.env
 
-*.swp
-*.tar.gz
+docker-compose.override.yml
