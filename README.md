@@ -7,9 +7,9 @@ This repository contains the installation method for OpenProject using Docker Co
 > Looking for the Kubernetes installation method?
 > Please use the [OpenProject helm chart](https://charts.openproject.org) to install OpenProject on kubernetes.
 
-## Install
+## Quick start
 
-Clone this repository:
+First, you must clone the [openproject-deploy](https://github.com/opf/openproject-deploy/tree/stable/14/compose) repository:
 
 ```shell
 git clone https://github.com/opf/openproject-deploy --depth=1 --branch=stable/14 openproject
@@ -25,10 +25,20 @@ vim .env
 Next you start up the containers in the background while making sure to pull the latest versions of all used images.
 
 ```shell
-docker compose up -d --build --pull always
+OPENPROJECT_HTTPS=false docker compose up -d --build --pull always
 ```
 
-After a while, OpenProject should be up and running on <http://localhost:8080>.
+After a while, OpenProject should be up and running on `http://localhost:8080`. The default username and password is login: `admin`, and password: `admin`. 
+The `OPENPROJECT_HTTPS=false` environment variable explicitly disables HTTPS mode for the first startup. Without this, OpenProject assumes it's running behind HTTPS in production by default.
+We do strongly recommend you use OpenProject behind a TLS terminated proxy for production purposes and remove this flag before actually starting to use it.
+
+### Customization
+
+The `docker-compose.yml` file present in the repository can be adjusted to your convenience. But note that with each pull, it will be overwritten. 
+Best practice is to use the file `docker-compose.override.yml` for that case. 
+For instance you could mount specific configuration files, override environment variables, or switch off services you don't need.
+
+Please refer to the official [Docker Compose documentation](https://docs.docker.com/compose/extends/) for more details.
 
 ### Troubleshooting
 
@@ -105,6 +115,10 @@ If you want to specify a custom tag for the OpenProject docker image, you can do
 TAG=my-docker-tag
 ```
 
+## BIM edition
+
+In order to install or change to BIM inside a Docker environment, please navigate to the [Docker Installation for OpenProject BIM](https://www.openproject.org/docs/installation-and-operations/bim-edition/#docker-installation-openproject-bim) paragraph at the BIM edition documentation.
+
 ## Upgrade
 
 Retrieve any changes from the `openproject-deploy` repository:
@@ -151,9 +165,24 @@ Restart your OpenProject installation
 
 ## Uninstall
 
-You can remove the stack with:
+If you want to stop the containers without removing them directly:
 
-    docker-compose down
+```bash
+docker-compose stop
+```
+
+You can remove the container stack with:
+
+```bash
+docker-compose down
+```
+
+> [!NOTE]
+> This will not remove your data which is persisted in named volumes, likely called `compose_opdata` (for attachments) and `compose_pgdata` (for the database).
+> The exact name depends on the name of the directory where your `docker-compose.yml` and/or you `docker-compose.override.yml` files are stored (`compose` in this case).
+
+If you want to start from scratch and remove the existing data you will have to remove these volumes via
+`docker volume rm compose_opdata compose_pgdata`.
 
 ## Troubleshooting
 
