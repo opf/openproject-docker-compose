@@ -22,6 +22,13 @@ cp .env.example .env
 vim .env
 ```
 
+If you are using the default value of OPDATA that is used in the ```.env.example``` you need to make sure that the folder exist, and you have the right permissions:
+
+```shell
+sudo mkdir -p /var/openproject/assets
+sudo chown 1000:1000 -R /var/openproject/assets
+```
+
 Next you start up the containers in the background while making sure to pull the latest versions of all used images.
 
 ```shell
