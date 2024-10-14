@@ -70,6 +70,11 @@ the [Caddy documentation](https://caddyserver.com/docs/caddyfile/directives/reve
 By default the port is bound to `0.0.0.0` means access to OpenProject will be public.
 See below how to change that.
 
+## Image configuration
+
+OpenProject publishes `slim` containers that you should be using for this compose setup.
+Please see https://www.openproject.org/docs/installation-and-operations/installation/docker/#available-containers for more information on the containers and versions we push.
+
 ## Configuration
 
 Environment variables can be added to `docker-compose.yml` under `x-op-app -> environment` to change
