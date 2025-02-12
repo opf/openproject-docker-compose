@@ -9,10 +9,10 @@ This repository contains the installation method for OpenProject using Docker Co
 
 ## Quick start
 
-First, you must clone the [openproject-deploy](https://github.com/opf/openproject-deploy/tree/stable/15/compose) repository:
+First, you must clone the [openproject-docker-compose](https://github.com/opf/openproject-docker-compose/tree/stable/15/compose) repository:
 
 ```shell
-git clone https://github.com/opf/openproject-deploy --depth=1 --branch=stable/15 openproject
+git clone https://github.com/opf/openproject-docker-compose --depth=1 --branch=stable/15 openproject
 ```
 
 Copy the example `.env` file and edit any values you want to change:
@@ -133,7 +133,7 @@ In order to install or change to BIM inside a Docker environment, please navigat
 
 ## Upgrade
 
-Retrieve any changes from the `openproject-deploy` repository:
+Retrieve any changes from the `openproject-docker-compose` repository:
 
     git pull origin stable/15
 
