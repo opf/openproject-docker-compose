@@ -3,7 +3,7 @@ set -e
 set -o pipefail
 
 CURRENT_PGVERSION="$(cat $PGDATA/PG_VERSION)"
-NEW_PGVERSION="13"
+NEW_PGVERSION="17"
 PGWORKDIR=${PGWORKDIR:=/var/lib/postgresql/work}
 
 if [ ! "$CURRENT_PGVERSION" -lt "$NEW_PGVERSION" ]; then
