@@ -14,7 +14,7 @@ x-op-app: &app
   <<: [*image, *restart_policy]
   environment:
     OPENPROJECT_HTTPS: "${OPENPROJECT_HTTPS:-true}"
-    OPENPROJECT_HOST__NAME: "${OPENPROJECT_HOST__NAME:-localhost:8080}"
+    OPENPROJECT_HOST__NAME: "${OPENPROJECT_HOST__NAME:-localhost:3033}"
     OPENPROJECT_HSTS: "${OPENPROJECT_HSTS:-true}"
     RAILS_CACHE_STORE: "memcache"
     OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
@@ -54,7 +54,7 @@ services:
     image: openproject/proxy
     <<: *restart_policy
     ports:
-      - "${PORT:-8080}:80"
+      - "${PORT:-3033}:3033"
     depends_on:
       - web
     networks:
@@ -73,7 +73,7 @@ services:
     labels:
       - autoheal=true
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default"]
+      test: ["CMD", "curl", "-f", "http://localhost:3033${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default"]
       interval: 10s
       timeout: 3s
       retries: 3
