@@ -1,4 +1,4 @@
-:80 {
+:3033 {
     reverse_proxy * http://${APP_HOST}:8080 {
         # The following directives are needed to make the proxy forward explicitly the X-Forwarded-* headers. If unset,
         # Caddy will reset them. See: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#defaults
