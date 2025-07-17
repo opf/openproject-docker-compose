@@ -39,13 +39,13 @@ services:
       POSTGRES_DB: openproject
     networks:
       - backend
-
+    container_name: db
   cache:
     image: memcached
     <<: *restart_policy
     networks:
       - backend
-
+    container_name: cache
   proxy:
     build:
       context: ./proxy
@@ -59,6 +59,7 @@ services:
       - web
     networks:
       - frontend
+    container_name: proxy
 
   web:
     <<: *app
@@ -78,7 +79,7 @@ services:
       timeout: 3s
       retries: 3
       start_period: 30s
-
+    container_name: web
   autoheal:
     image: willfarrell/autoheal:1.2.0
     volumes:
@@ -87,7 +88,7 @@ services:
       AUTOHEAL_CONTAINER_LABEL: autoheal
       AUTOHEAL_START_PERIOD: 600
       AUTOHEAL_INTERVAL: 30
-
+    container_name: autoheal
   worker:
     <<: *app
     command: "./docker/prod/worker"
@@ -97,7 +98,7 @@ services:
       - db
       - cache
       - seeder
-
+    container_name: worker
   cron:
     <<: *app
     command: "./docker/prod/cron"
@@ -107,10 +108,11 @@ services:
       - db
       - cache
       - seeder
-
+    container_name: cron
   seeder:
     <<: *app
     command: "./docker/prod/seeder"
     restart: on-failure
     networks:
       - backend
+    container_name: seeder
