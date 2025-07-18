@@ -1,3 +1,5 @@
+# docker-compose.yml CORRIGIDO para rodar na porta 3033 com Coolify
+
 networks:
   frontend:
   backend:
@@ -9,23 +11,22 @@ volumes:
 x-op-restart-policy: &restart_policy
   restart: unless-stopped
 x-op-image: &image
-  image: openproject/openproject:${TAG:-16-slim}
+  image: openproject/openproject:15-slim
 x-op-app: &app
   <<: [*image, *restart_policy]
   environment:
-    OPENPROJECT_HTTPS: "${OPENPROJECT_HTTPS:-true}"
-    OPENPROJECT_HOST__NAME: "${OPENPROJECT_HOST__NAME:-localhost:8080}"
-    OPENPROJECT_HSTS: "${OPENPROJECT_HSTS:-true}"
+    # As variáveis de ambiente do seu arquivo .env serão injetadas aqui pelo Coolify
+    # Garanta que PORT=3033 esteja no .env ou nas variáveis de ambiente do Coolify
+    OPENPROJECT_HTTPS: "true"
+    OPENPROJECT_HOST__NAME: "projetos.sudu.dev"
+    OPENPROJECT_HSTS: "true"
     RAILS_CACHE_STORE: "memcache"
     OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
-    OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
-    DATABASE_URL: "${DATABASE_URL:-postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true}"
-    RAILS_MIN_THREADS: ${RAILS_MIN_THREADS:-4}
-    RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-16}
-    # set to true to enable the email receiving feature. See ./docker/cron for more options
-    IMAP_ENABLED: "${IMAP_ENABLED:-false}"
+    DATABASE_URL: "postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true"
+    RAILS_MIN_THREADS: 4
+    RAILS_MAX_THREADS: 16
   volumes:
-    - "/var/openproject/assets:/var/openproject/assets"
+    - "opdata:/var/openproject/assets"
 
 services:
   db:
@@ -33,37 +34,26 @@ services:
     <<: *restart_policy
     stop_grace_period: "3s"
     volumes:
-      - "/var/lib/postgresql/data:/var/lib/postgresql/data"
+      - "pgdata:/var/lib/postgresql/data"
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-p4ssw0rd}
       POSTGRES_DB: openproject
     networks:
       - backend
-    container_name: db
+
   cache:
     image: memcached
     <<: *restart_policy
     networks:
       - backend
-    container_name: cache
-  proxy:
-    build:
-      context: ./proxy
-      args:
-        APP_HOST: web
-    image: openproject/proxy
-    <<: *restart_policy
-    ports:
-      - "${PORT:-3033}:80"
-    depends_on:
-      - web
-    networks:
-      - frontend
-    container_name: proxy
 
   web:
     <<: *app
-    command: "./docker/prod/web"
+    # SOBRESCREVENDO O COMANDO PARA USAR A PORTA DEFINIDA PELA VARIÁVEL PORT
+    command: "bundle exec rails server -b 0.0.0.0" 
+    ports:
+      # EXPONDO A PORTA INTERNA PARA O COOLIFY
+      - "3033"
     networks:
       - frontend
       - backend
@@ -71,24 +61,15 @@ services:
       - db
       - cache
       - seeder
-    labels:
-      - autoheal=true
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default"]
+      # ATUALIZANDO O HEALTHCHECK PARA A PORTA CORRETA
+      test: ["CMD", "curl", "-f", "http://localhost:3033${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default"]
       interval: 10s
       timeout: 3s
       retries: 3
       start_period: 30s
-    container_name: web
-  autoheal:
-    image: willfarrell/autoheal:1.2.0
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-    environment:
-      AUTOHEAL_CONTAINER_LABEL: autoheal
-      AUTOHEAL_START_PERIOD: 600
-      AUTOHEAL_INTERVAL: 30
-    container_name: autoheal
+  
+  # Outros serviços (worker, cron, etc.) podem ser mantidos como estavam, pois não precisam de porta externa.
   worker:
     <<: *app
     command: "./docker/prod/worker"
@@ -98,7 +79,7 @@ services:
       - db
       - cache
       - seeder
-    container_name: worker
+
   cron:
     <<: *app
     command: "./docker/prod/cron"
@@ -108,11 +89,10 @@ services:
       - db
       - cache
       - seeder
-    container_name: cron
+
   seeder:
     <<: *app
     command: "./docker/prod/seeder"
     restart: on-failure
     networks:
       - backend
-    container_name: seeder
