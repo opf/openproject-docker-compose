@@ -11,7 +11,7 @@ volumes:
 x-op-restart-policy: &restart_policy
   restart: unless-stopped
 x-op-image: &image
-  image: openproject/openproject:15-slim
+  image: openproject/openproject:16-slim
 x-op-app: &app
   <<: [*image, *restart_policy]
   environment:
