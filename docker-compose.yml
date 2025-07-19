@@ -25,6 +25,7 @@ x-op-app: &app
     DATABASE_URL: "postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true"
     RAILS_MIN_THREADS: 4
     RAILS_MAX_THREADS: 16
+    PORT: 3000
   volumes:
     - "opdata:/var/openproject/assets"
 
@@ -63,7 +64,7 @@ services:
       - seeder
     healthcheck:
       # ATUALIZANDO O HEALTHCHECK PARA A PORTA CORRETA
-      test: ["CMD", "curl", "-f", "http://localhost:3033${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default"]
       interval: 10s
       timeout: 3s
       retries: 3
