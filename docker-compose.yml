@@ -53,7 +53,7 @@ services:
     command: "bundle exec rails server -b 0.0.0.0" 
     ports:
       # EXPONDO A PORTA INTERNA PARA O COOLIFY
-      - "3033"
+      - "3000"
     networks:
       - frontend
       - backend
