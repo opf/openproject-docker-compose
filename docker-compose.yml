@@ -62,13 +62,13 @@ services:
       - db
       - cache
       - seeder
-    # healthcheck:
-    #   # ATUALIZANDO O HEALTHCHECK PARA A PORTA CORRETA
-    #   test: ["CMD", "curl", "-f", "http://localhost:3000${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default"]
-    #   interval: 10s
-    #   timeout: 3s
-    #   retries: 3
-    #   start_period: 30s
+    healthcheck:
+      # ATUALIZANDO O HEALTHCHECK PARA A PORTA CORRETA
+      test: ["CMD", "curl", "-f", "http://localhost:3000${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/health_checks/default"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
   
   # Outros serviços (worker, cron, etc.) podem ser mantidos como estavam, pois não precisam de porta externa.
   worker:
