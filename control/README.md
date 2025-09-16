@@ -26,7 +26,7 @@ Switch off your current installation (using the outdated postgres engine):
 ```
 Fetch the latest changes from this repository:
 ```shell
-    git pull origin stable/15 # adjust if needed
+    git pull origin stable/16 # adjust if needed
 ```
 Build the control plane:
 ```shell
