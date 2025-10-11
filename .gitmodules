@@ -1,0 +1,3 @@
+[submodule "external/prober"]
+	path = external/prober
+	url = https://github.com/JustinCBates/docker_prober_utility.git
