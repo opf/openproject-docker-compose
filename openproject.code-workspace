@@ -1,0 +1,136 @@
+{
+    "folders": [
+        {
+            "name": "openproject-docker-compose (main)",
+            "path": "."
+        },
+        {
+            "name": "config-manager",
+            "path": "external/config-manager"
+        },
+        {
+            "name": "deploy-manager",
+            "path": "external/deploy-manager"
+        },
+        {
+            "name": "prober",
+            "path": "external/prober"
+        }
+    ],
+    "settings": {
+        "python.defaultInterpreterPath": "${workspaceFolder:openproject-docker-compose (main)}/venv/bin/python",
+        "python.testing.pytestEnabled": true,
+        "python.testing.unittestEnabled": false,
+        "python.linting.enabled": true,
+        "python.linting.flake8Enabled": true,
+        "python.formatting.provider": "black",
+        "editor.formatOnSave": true,
+        "editor.rulers": [100],
+        "files.exclude": {
+            "**/__pycache__": true,
+            "**/*.pyc": true,
+            "**/.pytest_cache": true,
+            "**/.mypy_cache": true,
+            "**/*.egg-info": true
+        },
+        "files.watcherExclude": {
+            "**/__pycache__/**": true,
+            "**/.pytest_cache/**": true,
+            "**/.mypy_cache/**": true
+        },
+        "search.exclude": {
+            "**/__pycache__": true,
+            "**/.pytest_cache": true,
+            "**/.mypy_cache": true,
+            "**/venv": true,
+            "**/*.pyc": true
+        },
+        "[python]": {
+            "editor.formatOnSave": true,
+            "editor.codeActionsOnSave": {
+                "source.organizeImports": true
+            }
+        },
+        "git.ignoredRepositories": [],
+        "git.detectSubmodules": true,
+        "terminal.integrated.env.linux": {
+            "PYTHONPATH": "${workspaceFolder:openproject-docker-compose (main)}/src"
+        }
+    },
+    "extensions": {
+        "recommendations": [
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "ms-python.black-formatter",
+            "ms-python.flake8",
+            "ms-python.mypy-type-checker",
+            "donjayamanne.githistory",
+            "eamodio.gitlens",
+            "ms-vscode.makefile-tools",
+            "yzhang.markdown-all-in-one"
+        ]
+    },
+    "launch": {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "name": "Python: Current File",
+                "type": "python",
+                "request": "launch",
+                "program": "${file}",
+                "console": "integratedTerminal",
+                "justMyCode": true
+            },
+            {
+                "name": "Python: Main CLI",
+                "type": "python",
+                "request": "launch",
+                "module": "openproject_deploy.cli",
+                "args": ["--help"],
+                "console": "integratedTerminal",
+                "cwd": "${workspaceFolder:openproject-docker-compose (main)}"
+            },
+            {
+                "name": "Python: Pytest Current File",
+                "type": "python",
+                "request": "launch",
+                "module": "pytest",
+                "args": [
+                    "${file}",
+                    "-v"
+                ],
+                "console": "integratedTerminal",
+                "justMyCode": false
+            }
+        ]
+    },
+    "tasks": {
+        "version": "2.0.0",
+        "tasks": [
+            {
+                "label": "Run Tests (All Repos)",
+                "type": "shell",
+                "command": "pytest",
+                "problemMatcher": []
+            },
+            {
+                "label": "Format Code (Black - All Repos)",
+                "type": "shell",
+                "command": "black src tests",
+                "problemMatcher": []
+            },
+            {
+                "label": "Lint Code (Flake8 - All Repos)",
+                "type": "shell",
+                "command": "flake8 src tests",
+                "problemMatcher": []
+            },
+            {
+                "label": "Update Submodules",
+                "type": "shell",
+                "command": "git submodule update --remote --merge",
+                "problemMatcher": []
+            }
+        ]
+    }
+}

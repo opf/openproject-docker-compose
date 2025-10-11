@@ -43,4 +43,9 @@ htmlcov/
 *.swp
 *.swo
 *~
+
+# Submodules - tracked via .gitmodules
+# (external/ directories are git submodules, not ignored)
+
+# Legacy prober location (moved to external/prober submodule)
 proxy/integration_test/prober
