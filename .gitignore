@@ -43,3 +43,4 @@ htmlcov/
 *.swp
 *.swo
 *~
+proxy/integration_test/prober
