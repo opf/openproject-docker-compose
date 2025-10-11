@@ -1,0 +1,54 @@
+name: Docker Build
+
+on:
+  push:
+    branches: [ feature/python-rebuild, stable/16 ]
+    paths:
+      - 'proxy/**'
+      - 'control/**'
+      - 'docker-compose*.yml'
+      - '.github/workflows/docker-build.yml'
+  pull_request:
+    branches: [ feature/python-rebuild, stable/16 ]
+
+jobs:
+  build-proxy:
+    name: Build Proxy Container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build proxy image
+        run: docker build -t openproject/proxy:test ./proxy
+  
+  build-control:
+    name: Build Control Container
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build control image
+        run: docker build -t openproject/control:test ./control
+  
+  validate-compose:
+    name: Validate Docker Compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Create test .env file
+        run: |
+          cp .env.example .env || echo "TAG=16-slim" > .env
+          echo "OPENPROJECT_HOST__NAME=localhost" >> .env
+      
+      - name: Validate docker-compose.yml
+        run: docker compose config > /dev/null
+      
+      - name: Validate docker-compose.control.yml
+        run: docker compose -f docker-compose.yml -f docker-compose.control.yml config > /dev/null
