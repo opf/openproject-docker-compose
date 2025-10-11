@@ -1,0 +1,9 @@
+# Core dependencies
+click>=8.0.0
+python-dotenv>=1.0.0
+pyyaml>=6.0.0
+docker>=6.0.0
+rich>=13.0.0
+jinja2>=3.0.0
+
+# Development dependencies (install with: pip install -r requirements.txt -r requirements-dev.txt)
