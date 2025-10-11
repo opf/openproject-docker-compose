@@ -4,6 +4,17 @@
 
 This document defines the global architecture for the Python-based rebuild of the OpenProject Docker Compose deployment system. The goal is to replace Bash scripts with a maintainable, testable Python codebase while maintaining backward compatibility.
 
+### Multi-Repository Architecture
+
+This project uses a **modular multi-repository architecture** for maximum reusability and separation of concerns:
+
+- **[openproject-config-manager](https://github.com/JustinCBates/openproject-config-manager)** - Standalone configuration tool (reusable)
+- **[openproject-deploy-manager](https://github.com/JustinCBates/openproject-deploy-manager)** - Standalone deployment orchestrator (reusable)
+- **[docker-prober-utility](https://github.com/JustinCBates/docker_prober_utility)** - Validation and testing utility (reusable)
+- **openproject-docker-compose** (this repo) - OpenProject-specific orchestration and maintenance
+
+This repository serves as the **integration point** that orchestrates the standalone managers and provides OpenProject-specific functionality (backup, upgrade, migrations).
+
 ---
 
 ## Design Principles
@@ -15,6 +26,142 @@ This document defines the global architecture for the Python-based rebuild of th
 5. **Progressive Enhancement**: Can coexist with existing Bash scripts during migration
 6. **Observable**: Comprehensive logging and status reporting
 7. **Idempotent**: Operations can be safely retried without side effects
+8. **Modularity**: Core managers are standalone, reusable components
+
+---
+
+## Multi-Repository Strategy
+
+### **Repository Roles**
+
+#### **1. openproject-config-manager** (External Dependency)
+**Repository**: https://github.com/JustinCBates/openproject-config-manager  
+**Purpose**: Generic, reusable configuration management for Docker Compose projects
+
+**Responsibilities**:
+- Environment discovery (OS, network, Docker, ports, certificates)
+- Interactive configuration collection (Rich-based terminal UI)
+- Configuration validation (completeness, consistency, live testing)
+- Integration with docker-prober-utility for real-time validation
+- Generate `.env` and `.cfg` files
+
+**Reusability**: Can be used for any Docker Compose project requiring interactive configuration
+
+**Dependencies**: 
+- `rich` - Terminal UI
+- `docker` - Docker SDK
+- `pyyaml` - Config parsing
+- `docker-prober-utility` - Live validation
+
+---
+
+#### **2. openproject-deploy-manager** (External Dependency)
+**Repository**: https://github.com/JustinCBates/openproject-deploy-manager  
+**Purpose**: Generic, reusable deployment orchestration for Docker Compose stacks
+
+**Responsibilities**:
+- Load configuration from multiple sources
+- Render Jinja2 templates (Caddyfile, nginx.conf, etc.)
+- Orchestrate docker-compose lifecycle (up, down, restart)
+- Health checking and service validation
+- Integration with docker-prober-utility for pre-deployment testing
+- Automatic rollback on failure
+
+**Reusability**: Can orchestrate deployment of any Docker Compose stack
+
+**Dependencies**:
+- `docker` - Docker SDK
+- `jinja2` - Template rendering
+- `pyyaml` - Config parsing
+- `docker-prober-utility` - Pre-deployment validation
+
+---
+
+#### **3. docker-prober-utility** (External Dependency)
+**Repository**: https://github.com/JustinCBates/docker_prober_utility  
+**Purpose**: HTTP/HTTPS endpoint validation and testing utility
+
+**Responsibilities**:
+- Test HTTP/HTTPS endpoints
+- Validate TLS configuration
+- Test reverse proxy URL rewriting
+- Test response headers and status codes
+- Generate validation reports and recommendations
+
+**Reusability**: Used by both config-manager and deploy-manager for validation
+
+**Dependencies**:
+- `docker` - Docker SDK
+- `requests` - HTTP testing
+
+---
+
+#### **4. openproject-docker-compose** (This Repository)
+**Repository**: https://github.com/JustinCBates/openproject-docker-compose  
+**Purpose**: OpenProject-specific deployment integration and maintenance
+
+**Responsibilities**:
+- Orchestrate config-manager and deploy-manager
+- OpenProject-specific templates (Caddyfile, docker-compose overrides)
+- Maintenance operations (backup, upgrade, migrations)
+- CLI interface wrapping all managers
+- OpenProject deployment documentation
+
+**OpenProject-Specific Components**:
+- Maintenance Manager (backup, upgrade, migrations)
+- OpenProject templates
+- CLI orchestration layer
+
+**Dependencies**:
+- `openproject-config-manager` (external repo)
+- `openproject-deploy-manager` (external repo)
+- `docker-prober-utility` (external repo)
+
+---
+
+## Dependency Graph
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│         openproject-docker-compose (Main Repo)              │
+│                                                             │
+│  ├─ CLI (orchestrates external managers)                   │
+│  ├─ Maintenance Manager (OpenProject-specific)             │
+│  └─ Templates (OpenProject-specific Jinja2 templates)      │
+│                                                             │
+│  External Dependencies:                                     │
+│  ├─ openproject-config-manager  ────────────┐              │
+│  ├─ openproject-deploy-manager  ──────────┐ │              │
+│  └─ docker-prober-utility  ──────────┐    │ │              │
+└──────────────────────────────────────┼────┼─┼──────────────┘
+                                       │    │ │
+                                       ▼    ▼ ▼
+┌──────────────────────────────────────────────────────────────┐
+│              Standalone Repositories                         │
+├──────────────────────────────────────────────────────────────┤
+│                                                              │
+│  ┌──────────────────────┐  ┌──────────────────────┐        │
+│  │ docker-prober-utility│  │ config-manager       │        │
+│  │  (validation tool)   │  │  (interactive setup) │        │
+│  │                      │  │                      │        │
+│  │ - HTTP/HTTPS testing │  │ - Discovery Engine   │        │
+│  │ - TLS validation     │  │ - Interactive UI     │        │
+│  │ - Endpoint probing   │  │ - Validation Engine  │        │
+│  │ - Recommendations    │  │ - Uses Prober ───────┼────────┤
+│  └──────────────────────┘  └──────────────────────┘        │
+│                                                              │
+│  ┌──────────────────────┐                                   │
+│  │ deploy-manager       │                                   │
+│  │  (orchestration)     │                                   │
+│  │                      │                                   │
+│  │ - Template Rendering │                                   │
+│  │ - Docker Compose Ops │                                   │
+│  │ - Health Checks      │                                   │
+│  │ - Rollback Logic     │                                   │
+│  │ - Uses Prober ───────┼───────────────────────────────────┤
+│  └──────────────────────┘                                   │
+└──────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -56,8 +203,20 @@ This document defines the global architecture for the Python-based rebuild of th
 
 ## Core Components
 
-### 1. Configuration Manager (`config_manager.py`)
-**Status**: ✅ Implemented (Phase 1)
+This section defines the **three main manager** components and how they interact. Note that **Configuration Manager** and **Deploy Manager** are developed in **external repositories** and consumed as dependencies, while **Maintenance Manager** remains in this repository.
+
+---
+
+## 1. Configuration Manager 
+**Repository**: [openproject-config-manager](https://github.com/JustinCBates/openproject-config-manager)  
+**Status**: 🔜 To be implemented (Phase 1.5 - HIGH PRIORITY)  
+**Consumed by**: openproject-docker-compose (this repo) as external dependency
+
+**Purpose**: Provide generic, reusable configuration management for Docker Compose projects with intelligent discovery, interactive UI, and live validation
+
+### 1.1 Core Configuration (`config_manager.py`)
+### 1.1 Core Configuration (`config_manager.py`)
+**Status**: ✅ Implemented (Phase 1 - in this repo, will migrate to config-manager repo)
 
 **Responsibilities**:
 - Load configuration from multiple sources (.env, .cfg, environment variables)
@@ -65,7 +224,6 @@ This document defines the global architecture for the Python-based rebuild of th
 - Apply defaults with override chain
 - Save configuration to disk
 - Mask sensitive values in output
-- **Consumed by Interactive Configuration System**
 
 **Interface**:
 ```python
@@ -83,8 +241,8 @@ class ConfigManager:
 
 ---
 
-### 1a. Interactive Configuration System (`interactive/`)
-**Status**: 🔜 To be implemented (Phase 1.5 - NEW)
+### 1.2 Interactive Configuration System (`interactive/`)
+**Status**: 🔜 To be implemented in openproject-config-manager repo
 
 **Note**: See detailed architecture in `INTERACTIVE_CONFIG_ARCHITECTURE.md`
 
@@ -202,33 +360,42 @@ class ConfigurationFinalizer:
 
 **Dependencies**: rich, docker, docker_prober_utility (external), ConfigManager
 
-**CLI Integration**:
+**CLI Integration** (from openproject-docker-compose):
 ```bash
-openproject configure --interactive
-openproject configure --resume       # Resume interrupted config
-openproject configure --template=prod  # Use template (future)
+openproject configure --interactive     # Run interactive config
+openproject configure --resume          # Resume interrupted config
+openproject configure --template=prod   # Use predefined template (future)
+openproject config show                 # Display current config
+openproject config set KEY=VALUE        # Set individual config value
 ```
 
 ---
 
-### 2. Deployment Orchestrator (`orchestrator.py`)
-**Status**: 🔄 To be implemented (Phase 2)
+## 2. Deploy Manager
+**Repository**: [openproject-deploy-manager](https://github.com/JustinCBates/openproject-deploy-manager)  
+**Status**: 🔜 To be implemented (Phase 2)  
+**Consumed by**: openproject-docker-compose (this repo) as external dependency
+
+**Purpose**: Provide generic, reusable deployment orchestration for Docker Compose stacks with health checking, rollback, and live validation
+
+### 2.1 Deployment Orchestrator (`orchestrator.py`)
+### 2.1 Deployment Orchestrator (`orchestrator.py`)
+**Status**: 🔄 To be implemented in openproject-deploy-manager repo
 
 **Responsibilities**:
 - Orchestrate the full deployment lifecycle
 - Validate configuration before deployment
-- Render templates (Caddyfile, etc.)
-- Execute docker-compose commands
-- Monitor deployment progress
+- Coordinate template rendering, docker-compose execution, and health checks
+- **Integrate with Prober for pre-deployment validation**
 - Handle rollback on failure
 - Report deployment status
 
 **Interface**:
 ```python
 class DeploymentOrchestrator:
-    def __init__(config: ConfigManager, docker_client: DockerClient)
+    def __init__(config: dict, docker_client: DockerClient)
     def validate_deployment() -> ValidationResult
-    def deploy(dry_run: bool = False) -> DeploymentResult
+    def deploy(dry_run: bool = False, prober_enabled: bool = True) -> DeploymentResult
     def rollback() -> RollbackResult
     def get_status() -> DeploymentStatus
     
@@ -236,6 +403,7 @@ class ValidationResult:
     is_valid: bool
     errors: List[ValidationError]
     warnings: List[str]
+    prober_results: ProberTestResult  # From docker-prober-utility
     
 class DeploymentResult:
     success: bool
@@ -245,29 +413,29 @@ class DeploymentResult:
     logs: str
 ```
 
-**Dependencies**: ConfigManager, TemplateRenderer, HealthChecker, DockerClient
+**Dependencies**: docker, jinja2, docker-prober-utility (external)
 
 **Workflow**:
 ```
 1. Pre-deployment validation
-   ├─ Validate configuration
+   ├─ Validate configuration completeness
    ├─ Check Docker daemon
    ├─ Verify images available
-   └─ Check port availability
+   ├─ Check port availability
+   └─ **Run prober preflight check** (if enabled)
 
 2. Template rendering
-   ├─ Render Caddyfile from template
-   ├─ Validate rendered output
-   └─ Render docker-compose overrides (if needed)
+   ├─ Render templates (Caddyfile, overrides) via TemplateRenderer
+   └─ Validate rendered output
 
 3. Deployment execution
    ├─ Pull latest images (if requested)
-   ├─ Create snapshot (for rollback)
+   ├─ Create deployment snapshot (for rollback)
    ├─ docker-compose up -d
    └─ Monitor service startup
 
 4. Health checks
-   ├─ Wait for services to be healthy
+   ├─ Wait for services to be healthy via HealthChecker
    ├─ Run smoke tests
    └─ Validate endpoints
 
@@ -279,8 +447,9 @@ class DeploymentResult:
 
 ---
 
-### 3. Template Renderer (`template_renderer.py`)
-**Status**: 🔜 To be implemented (Phase 2)
+### 2.2 Template Renderer (`template_renderer.py`)
+### 2.2 Template Renderer (`template_renderer.py`)
+**Status**: 🔜 To be implemented in openproject-deploy-manager repo
 
 **Responsibilities**:
 - Render Jinja2 templates with configuration values
@@ -291,35 +460,36 @@ class DeploymentResult:
 **Interface**:
 ```python
 class TemplateRenderer:
-    def __init__(config: ConfigManager, template_dir: Path)
+    def __init__(template_dir: Path)
     def render(template_name: str, context: dict) -> str
     def render_to_file(template_name: str, output_path: Path, context: dict) -> None
     def validate_rendered(content: str, validator: Callable) -> ValidationResult
 ```
 
-**Templates**:
+**Templates** (provided by consuming project):
 - `Caddyfile.template.j2`: Caddy reverse proxy configuration
+- `nginx.conf.j2`: Nginx configuration (alternative)
 - `docker-compose.override.yml.j2`: Optional compose overrides
-- Future: `backup-script.sh.j2`, `upgrade-script.sh.j2`
 
-**Dependencies**: jinja2, ConfigManager
+**Dependencies**: jinja2
 
 ---
 
-### 4. Health Checker (`health_checker.py`)
-**Status**: 🔜 To be implemented (Phase 2)
+### 2.3 Health Checker (`health_checker.py`)
+### 2.3 Health Checker (`health_checker.py`)
+**Status**: 🔜 To be implemented in openproject-deploy-manager repo
 
 **Responsibilities**:
 - Check service health via Docker API
 - Probe HTTP/HTTPS endpoints
-- Verify database connectivity
+- Verify database connectivity (optional)
 - Wait for services to become healthy with timeout
 - Report detailed health status
 
 **Interface**:
 ```python
 class HealthChecker:
-    def __init__(docker_client: DockerClient, config: ConfigManager)
+    def __init__(docker_client: DockerClient)
     def check_service(service_name: str) -> HealthStatus
     def check_endpoint(url: str, timeout: int) -> EndpointStatus
     def wait_for_healthy(services: List[str], timeout: int) -> HealthCheckResult
@@ -339,37 +509,54 @@ class EndpointStatus:
 
 **Health Check Strategy**:
 1. Docker container health (via healthcheck)
-2. HTTP endpoint probes (GET /health_checks/default)
-3. Database connection test (via pg_isready or similar)
-4. Service-specific checks (e.g., cache connectivity)
+2. HTTP endpoint probes (GET /health or similar)
+3. Database connection test (via pg_isready or similar, if applicable)
+4. Service-specific checks
 
-**Dependencies**: docker, requests, ConfigManager
+**Dependencies**: docker, requests
+
+**CLI Integration** (from openproject-docker-compose):
+```bash
+openproject deploy                      # Full deployment with health checks
+openproject deploy --dry-run            # Validate without deploying
+openproject deploy --no-prober          # Skip prober preflight check
+openproject status                      # Check current deployment status
+```
 
 ---
 
-### 5. Control Plane (`control_plane.py`)
-**Status**: 🔜 To be implemented (Phase 3)
+## 3. Maintenance Manager
+**Repository**: openproject-docker-compose (this repo)  
+**Status**: 🔜 To be implemented (Phase 3)  
+**Location**: `src/openproject/maintenance/`
+
+**Purpose**: Provide OpenProject-specific maintenance operations (backup, upgrade, migrations)
+
+**Why in main repo?**
+- Highly coupled to OpenProject's database schema and data structure
+- PostgreSQL upgrade paths specific to OpenProject versions
+- Migration scripts specific to OpenProject version transitions
+- Lower reusability (other projects have different maintenance needs)
+
+### 3.1 Backup Manager (`backup.py`)
+### 3.1 Backup Manager (`backup.py`)
+**Status**: 🔜 To be implemented in openproject-docker-compose (Phase 3)
 
 **Responsibilities**:
-- Execute backup operations (PostgreSQL, OpenProject assets)
-- Execute upgrade operations (PostgreSQL version upgrade)
+- Execute backup operations (PostgreSQL database, OpenProject assets)
 - Verify backup integrity
-- Handle backup/upgrade rollback
+- Manage backup retention policy
+- Restore from backups
 
 **Interface**:
 ```python
 class BackupManager:
-    def __init__(config: ConfigManager, docker_client: DockerClient)
+    def __init__(config: dict)
     def create_backup(backup_type: BackupType) -> BackupResult
     def restore_backup(backup_path: Path) -> RestoreResult
     def verify_backup(backup_path: Path) -> VerificationResult
     def list_backups() -> List[BackupInfo]
-    
-class UpgradeManager:
-    def __init__(config: ConfigManager, docker_client: DockerClient)
-    def check_upgrade_path() -> UpgradePathInfo
-    def execute_upgrade(dry_run: bool = False) -> UpgradeResult
-    def rollback_upgrade() -> RollbackResult
+    def cleanup_old_backups(retention_days: int) -> CleanupResult
 ```
 
 **Backup Strategy**:
@@ -379,64 +566,114 @@ class UpgradeManager:
 - Verify backup integrity after creation
 - Maintain backup retention policy
 
-**Upgrade Strategy**:
-- Detect current PostgreSQL version
-- Validate upgrade path
-- Create automatic backup before upgrade
-- Run pg_upgrade in a controlled container
-- Verify upgraded database
-- Clean up old data on success
-
-**Dependencies**: docker, ConfigManager
+**Dependencies**: docker (uses openproject-deploy-manager's DockerClient)
 
 ---
 
-### 6. Integration Tester (`integration_tester.py`)
-**Status**: 🔜 To be implemented (Phase 4)
+### 3.2 Upgrade Manager (`upgrade.py`)
+**Status**: 🔜 To be implemented in openproject-docker-compose (Phase 3)
 
 **Responsibilities**:
-- Launch minimal proxy + backend for testing
-- Probe configuration before full deployment
-- Provide interactive feedback to user
-- Clean up test containers
-- Generate test reports
+- Handle PostgreSQL version upgrades
+- Validate upgrade paths
+- Execute pg_upgrade safely
+- Handle rollback on failure
 
 **Interface**:
 ```python
-class IntegrationTester:
-    def __init__(config: ConfigManager, docker_client: DockerClient)
-    def run_integration_test(interactive: bool = True) -> TestResult
-    def cleanup() -> None
-    
-class TestResult:
-    success: bool
-    tests_passed: int
-    tests_failed: int
-    recommendations: List[str]
-    logs: str
+class UpgradeManager:
+    def __init__(config: dict)
+    def check_upgrade_path(target_version: str) -> UpgradePathInfo
+    def execute_upgrade(target_version: str, dry_run: bool = False) -> UpgradeResult
+    def rollback_upgrade() -> RollbackResult
 ```
 
-**Test Scenarios**:
-1. HTTP proxy configuration
-2. HTTPS/TLS configuration (if enabled)
-3. URL rewriting (if namespace enabled)
-4. Header forwarding
-5. Backend connectivity
-6. Performance baseline
+**Upgrade Strategy**:
+- Detect current PostgreSQL version
+- Validate upgrade path (e.g., PG 13 → 16)
+- **Create automatic backup before upgrade** (via BackupManager)
+- Run pg_upgrade in controlled container
+- Verify upgraded database
+- Clean up old data on success
 
-**Dependencies**: docker, docker_prober_utility (external repo), ConfigManager
+**Dependencies**: docker, BackupManager
 
 ---
 
-### 7. Docker Client Wrapper (`docker_client.py`)
-**Status**: 🔜 To be implemented (Phase 2)
+### 3.3 Migration Manager (`migration.py`)
+**Status**: 🔜 To be implemented in openproject-docker-compose (Phase 3 or later)
 
 **Responsibilities**:
-- Wrap Docker SDK for Python
-- Provide simplified interface for common operations
-- Handle Docker API errors gracefully
-- Support docker-compose operations
-- Monitor container logs and events
+- Handle data migrations between OpenProject versions
+- Execute schema changes
+- Validate migration success
+
+**Interface**:
+```python
+class MigrationManager:
+    def __init__(config: dict)
+    def check_pending_migrations() -> List[Migration]
+    def execute_migration(migration_id: str, dry_run: bool = False) -> MigrationResult
+    def rollback_migration(migration_id: str) -> RollbackResult
+```
+
+**CLI Integration** (from openproject-docker-compose):
+```bash
+openproject backup create               # Create full backup
+openproject backup list                 # List available backups
+openproject backup restore PATH         # Restore from backup
+openproject upgrade --to=16             # Upgrade PostgreSQL to version 16
+openproject migrate                     # Run pending migrations
+```
+
+---
+
+## 4. Shared Utilities
+
+These utilities are used by all managers and reside in the main openproject-docker-compose repository.
+
+### 4.1 Prober Client Wrapper (`utils/prober_client.py`)
+**Status**: 🔜 To be implemented (Phase 1.5)  
+**Location**: openproject-docker-compose (main repo)
+
+**Purpose**: Provide a unified interface to docker-prober-utility for all managers
+
+**Interface**:
+```python
+from docker_prober_utility import ProberClient as ExternalProber
+
+class OpenProjectProberClient:
+    """
+    Thin wrapper around docker-prober-utility for OpenProject-specific usage.
+    Used by both config-manager (quick validation) and deploy-manager (preflight).
+    """
+    
+    def __init__(self, config: dict):
+        self.config = config
+    
+    def validate_for_config(self) -> ValidationResult:
+        """Used by config-manager for quick validation during interactive setup"""
+        prober = ExternalProber(mode='quick')
+        return prober.test_configuration(self.config)
+    
+    def validate_for_deployment(self) -> ValidationResult:
+        """Used by deploy-manager for thorough preflight before deployment"""
+        prober = ExternalProber(mode='thorough')
+        return prober.pre_deployment_check(self.config)
+```
+
+**Why in main repo?**
+- Acts as integration glue between external prober and managers
+- OpenProject-specific configuration mapping
+- Allows versioning of prober integration separately from managers
+
+---
+
+### 4.2 Docker Client (`utils/docker_client.py`)
+**Status**: 🔜 To be implemented (Phase 2)  
+**Can be moved to deploy-manager repo**
+
+**Purpose**: Simplified Docker SDK wrapper
 
 **Interface**:
 ```python
@@ -450,7 +687,19 @@ class DockerClient:
     def is_daemon_running() -> bool
 ```
 
-**Dependencies**: docker, docker-compose (subprocess calls or compose-go bindings)
+**Dependencies**: docker
+
+---
+
+### 4.3 Logging, Errors, Validation
+**Status**: 🔜 To be implemented (Phase 1 or 2)
+
+**Purpose**: Shared utilities for logging, custom exceptions, and validation helpers
+
+Files:
+- `utils/logging.py` - Centralized logging configuration
+- `utils/errors.py` - Custom exception classes (ConfigurationError, DeploymentError, etc.)
+- `utils/validation.py` - Common validation helpers
 
 ---
 
