@@ -2,7 +2,7 @@ name: Python CI
 
 on:
   push:
-    branches: [ feature/python-rebuild, stable/16 ]
+    branches: [ feature/python-rebuild, develop ]
     paths:
       - 'src/**'
       - 'tests/**'
@@ -10,7 +10,7 @@ on:
       - 'requirements*.txt'
       - '.github/workflows/python-ci.yml'
   pull_request:
-    branches: [ feature/python-rebuild, stable/16 ]
+    branches: [ develop ]
 
 jobs:
   lint:

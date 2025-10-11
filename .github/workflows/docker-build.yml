@@ -2,14 +2,14 @@ name: Docker Build
 
 on:
   push:
-    branches: [ feature/python-rebuild, stable/16 ]
+    branches: [ feature/python-rebuild, develop ]
     paths:
       - 'proxy/**'
       - 'control/**'
       - 'docker-compose*.yml'
       - '.github/workflows/docker-build.yml'
   pull_request:
-    branches: [ feature/python-rebuild, stable/16 ]
+    branches: [ develop ]
 
 jobs:
   build-proxy:
