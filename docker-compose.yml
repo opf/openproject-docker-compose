@@ -19,6 +19,8 @@ x-op-app: &app
     RAILS_CACHE_STORE: "memcache"
     OPENPROJECT_CACHE__MEMCACHE__SERVER: "cache:11211"
     OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
+    OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__URL: "${OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__URL}"
+    OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__SECRET: "${OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__SECRET}"
     DATABASE_URL: "${DATABASE_URL:-postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true}"
     RAILS_MIN_THREADS: ${RAILS_MIN_THREADS:-4}
     RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-16}
@@ -51,6 +53,7 @@ services:
       context: ./proxy
       args:
         APP_HOST: web
+        HOCUSPOCUS_HOST: hocuspocus
     image: openproject/proxy
     <<: *restart_policy
     ports:
@@ -114,3 +117,10 @@ services:
     restart: on-failure
     networks:
       - backend
+
+  hocuspocus:
+    image:  openproject/hocuspocus:main-88913ad0
+    networks:
+      - frontend
+    environment:
+      SECRET: "${OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__SECRET}"
