@@ -39,9 +39,26 @@ After a while, OpenProject should be up and running on `http://localhost:8080`. 
 The `OPENPROJECT_HTTPS=false` environment variable explicitly disables HTTPS mode for the first startup. Without this, OpenProject assumes it's running behind HTTPS in production by default.
 We do strongly recommend you use OpenProject behind a TLS terminated proxy for production purposes and remove this flag before actually starting to use it.
 
-## Development Setup
+## For End Users (Standard Installation)
 
-This repository uses git submodules to organize external components. For developers who want to contribute or customize the system:
+**End users only need git and Docker Compose - no additional tools required:**
+
+```shell
+# Clone complete system (all code automatically downloaded)
+git clone --recursive -b feature/python-rebuild https://github.com/JustinCBates/openproject-docker-compose.git
+cd openproject-docker-compose
+
+# Standard OpenProject setup
+cp .env.example .env
+# Edit .env file as needed
+docker-compose up -d
+```
+
+> **Note**: The `--recursive` flag automatically downloads all required external components via git submodules. No VS Code, Python setup, or developer tools needed for basic OpenProject usage.
+
+## Development Setup (Optional - For Contributors)
+
+This repository uses git submodules to organize external components. **This section is only for developers who want to contribute or customize the system:**
 
 ### Quick Development Setup
 
@@ -91,15 +108,7 @@ openproject-docker-compose/
 3. **Update submodule references** in main repo to track new versions
 4. **Use VS Code tasks** for testing, formatting, and submodule management
 
-### For End Users (Non-Developers)
-
-End users only need the standard clone command - the development setup is completely optional:
-
-```shell
-git clone --recursive -b feature/python-rebuild https://github.com/JustinCBates/openproject-docker-compose.git
-```
-
-All required code will be automatically downloaded via git submodules.
+> **Important**: The development setup with VS Code workspace and setup script is **completely optional**. End users can use OpenProject normally without any of these developer tools.
 
 ### Customization
 
