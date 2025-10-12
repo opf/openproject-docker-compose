@@ -9,7 +9,7 @@
             "path": "external/config-manager"
         },
         {
-            "name": "deploy-manager",
+            "name": "deploy-manager", 
             "path": "external/deploy-manager"
         },
         {
@@ -53,9 +53,18 @@
         },
         "git.ignoredRepositories": [],
         "git.detectSubmodules": true,
+        "git.enableSmartCommit": true,
+        "git.confirmSync": false,
+        "git.autofetch": true,
+        "scm.defaultViewMode": "tree",
         "terminal.integrated.env.linux": {
-            "PYTHONPATH": "${workspaceFolder:openproject-docker-compose (main)}/src"
-        }
+            "PYTHONPATH": "${workspaceFolder:openproject-docker-compose (main)}/src:${workspaceFolder:config-manager}/src"
+        },
+        "python.analysis.extraPaths": [
+            "${workspaceFolder:config-manager}/src",
+            "${workspaceFolder:deploy-manager}/src", 
+            "${workspaceFolder:prober}"
+        ]
     },
     "extensions": {
         "recommendations": [
@@ -129,6 +138,39 @@
                 "label": "Update Submodules",
                 "type": "shell",
                 "command": "git submodule update --remote --merge",
+                "group": "build",
+                "presentation": {
+                    "echo": true,
+                    "reveal": "always",
+                    "focus": false,
+                    "panel": "shared"
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "Initialize Submodules (First Time Setup)",
+                "type": "shell", 
+                "command": "git submodule update --init --recursive",
+                "group": "build",
+                "presentation": {
+                    "echo": true,
+                    "reveal": "always",
+                    "focus": false,
+                    "panel": "shared"
+                },
+                "problemMatcher": []
+            },
+            {
+                "label": "Switch All Submodules to Main Branch",
+                "type": "shell",
+                "command": "git submodule foreach 'git checkout main || git checkout master'",
+                "group": "build", 
+                "presentation": {
+                    "echo": true,
+                    "reveal": "always",
+                    "focus": false,
+                    "panel": "shared"
+                },
                 "problemMatcher": []
             }
         ]

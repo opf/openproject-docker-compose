@@ -39,6 +39,68 @@ After a while, OpenProject should be up and running on `http://localhost:8080`. 
 The `OPENPROJECT_HTTPS=false` environment variable explicitly disables HTTPS mode for the first startup. Without this, OpenProject assumes it's running behind HTTPS in production by default.
 We do strongly recommend you use OpenProject behind a TLS terminated proxy for production purposes and remove this flag before actually starting to use it.
 
+## Development Setup
+
+This repository uses git submodules to organize external components. For developers who want to contribute or customize the system:
+
+### Quick Development Setup
+
+```shell
+# Clone with all submodules (complete system)
+git clone --recursive -b feature/python-rebuild https://github.com/JustinCBates/openproject-docker-compose.git
+cd openproject-docker-compose
+
+# Run automated development environment setup
+./setup-dev-environment.sh
+
+# Open VS Code with multi-repository workspace
+code openproject.code-workspace
+```
+
+### Repository Structure
+
+```
+openproject-docker-compose/
+├── external/config-manager/    # Interactive configuration management
+├── external/deploy-manager/    # Deployment utilities  
+├── external/prober/            # Docker environment probing
+└── openproject.code-workspace  # VS Code multi-repo workspace
+```
+
+### VS Code Workspace Features
+
+- **Multi-Repository Support**: All 4 repositories accessible as separate folders
+- **Integrated Git**: Submodule detection and management
+- **Python Development**: Configured paths, linting, formatting, testing
+- **Built-in Tasks**: Test, format, lint, and submodule management
+- **Debug Configurations**: Ready-to-use Python debugging
+
+### Available VS Code Tasks
+
+- `Run Tests (All Repos)` - Execute pytest across all components
+- `Format Code (Black - All Repos)` - Auto-format Python code
+- `Lint Code (Flake8 - All Repos)` - Code quality checking
+- `Update Submodules` - Sync latest changes from all repos
+- `Initialize Submodules (First Time Setup)` - Set up repos for new clones
+- `Switch All Submodules to Main Branch` - Prepare for development
+
+### Development Workflow
+
+1. **Make changes** in any `external/` directory (each is a separate git repo)
+2. **Commit and push** changes to the respective component repository  
+3. **Update submodule references** in main repo to track new versions
+4. **Use VS Code tasks** for testing, formatting, and submodule management
+
+### For End Users (Non-Developers)
+
+End users only need the standard clone command - the development setup is completely optional:
+
+```shell
+git clone --recursive -b feature/python-rebuild https://github.com/JustinCBates/openproject-docker-compose.git
+```
+
+All required code will be automatically downloaded via git submodules.
+
 ### Customization
 
 The `docker-compose.yml` file present in the repository can be adjusted to your convenience. But note that with each pull, it will be overwritten.
