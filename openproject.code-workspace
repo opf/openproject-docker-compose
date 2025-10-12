@@ -15,6 +15,10 @@
         {
             "name": "prober",
             "path": "external/prober"
+        },
+        {
+            "name": "tui-form-designer",
+            "path": "external/tui-form-designer"
         }
     ],
     "settings": {
@@ -65,7 +69,8 @@
         "python.analysis.extraPaths": [
             "${workspaceFolder:config-manager}/src",
             "${workspaceFolder:deploy-manager}/src",
-            "${workspaceFolder:prober}"
+            "${workspaceFolder:prober}",
+            "${workspaceFolder:tui-form-designer}/src"
         ]
     },
     "extensions": {
