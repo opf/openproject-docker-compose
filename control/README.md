@@ -45,3 +45,6 @@ Relaunch your OpenProject installation, using the normal Compose command:
     docker-compose up -d
 ```
 Test that everything works again, the database container should now be running postgres 17.
+
+## Dependencies
+

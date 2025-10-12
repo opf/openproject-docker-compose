@@ -292,3 +292,28 @@ worker:
   dns:
     - "Your DNS IP" # OR add a public DNS resolver like 8.8.8.8
 ```
+
+## Dependencies
+
+### Production (End Users)
+
+**Required:**
+- `docker-compose` - Container orchestration
+- `docker` - Container runtime
+
+**Optional Features:**
+- `git` - Version control (if using git submodules)
+- `curl` - HTTP requests (if downloading resources)
+- `openssl` - SSL certificates (if generating certs)
+
+### Development (Contributors)
+
+**Required:**
+- `git` - Version control
+- `make` - Build automation (if using Makefile)
+
+**Optional Tools:**
+- `jq` - JSON processing (if parsing JSON configs)
+- `yamllint` - YAML validation (if validating compose files)
+- `shellcheck` - Shell script linting (if using shell scripts)
+

@@ -9,7 +9,7 @@
             "path": "external/config-manager"
         },
         {
-            "name": "deploy-manager", 
+            "name": "deploy-manager",
             "path": "external/deploy-manager"
         },
         {
@@ -25,7 +25,9 @@
         "python.linting.flake8Enabled": true,
         "python.formatting.provider": "black",
         "editor.formatOnSave": true,
-        "editor.rulers": [100],
+        "editor.rulers": [
+            100
+        ],
         "files.exclude": {
             "**/__pycache__": true,
             "**/*.pyc": true,
@@ -62,7 +64,7 @@
         },
         "python.analysis.extraPaths": [
             "${workspaceFolder:config-manager}/src",
-            "${workspaceFolder:deploy-manager}/src", 
+            "${workspaceFolder:deploy-manager}/src",
             "${workspaceFolder:prober}"
         ]
     },
@@ -95,7 +97,9 @@
                 "type": "python",
                 "request": "launch",
                 "module": "openproject_deploy.cli",
-                "args": ["--help"],
+                "args": [
+                    "--help"
+                ],
                 "console": "integratedTerminal",
                 "cwd": "${workspaceFolder:openproject-docker-compose (main)}"
             },
@@ -149,7 +153,7 @@
             },
             {
                 "label": "Initialize Submodules (First Time Setup)",
-                "type": "shell", 
+                "type": "shell",
                 "command": "git submodule update --init --recursive",
                 "group": "build",
                 "presentation": {
@@ -164,7 +168,7 @@
                 "label": "Switch All Submodules to Main Branch",
                 "type": "shell",
                 "command": "git submodule foreach 'git checkout main || git checkout master'",
-                "group": "build", 
+                "group": "build",
                 "presentation": {
                     "echo": true,
                     "reveal": "always",
