@@ -1,0 +1,73 @@
+# OpenProject Caddyfile Template
+# This template is rendered by the Deployment Manager with configuration values
+
+{{ domain_name }}{% if url_prefix %}{{ url_prefix }}{% endif %} {
+    {% if https_enabled %}
+    # HTTPS Configuration
+    tls {% if ssl_email %}{{ ssl_email }}{% else %}internal{% endif %}
+    {% endif %}
+    
+    # Reverse proxy to OpenProject web service
+    reverse_proxy web:3000 {
+        # Preserve original headers
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+        
+        # OpenProject-specific headers
+        header_up X-Forwarded-Ssl {% if https_enabled %}on{% else %}off{% endif %}
+        header_up X-Forwarded-Port {% if https_enabled %}{{ https_port }}{% else %}{{ http_port }}{% endif %}
+    }
+    
+    {% if rate_limiting_enabled %}
+    # Rate limiting
+    rate_limit {
+        zone dynamic {
+            key {remote}
+            events {{ rate_limit_events | default(100) }}
+            window {{ rate_limit_window | default("1m") }}
+        }
+    }
+    {% endif %}
+    
+    {% if security_headers_enabled %}
+    # Security headers
+    header {
+        # Remove server information
+        -Server
+        
+        # Security headers
+        X-Content-Type-Options nosniff
+        X-Frame-Options SAMEORIGIN
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy strict-origin-when-cross-origin
+        
+        {% if https_enabled %}
+        # HTTPS security
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        {% endif %}
+    }
+    {% endif %}
+    
+    # Logging
+    log {
+        output file /var/log/caddy/{{ domain_name | replace('.', '_') }}.log {
+            roll_size 100MB
+            roll_keep 5
+        }
+        format json
+    }
+    
+    # Health check endpoint
+    handle /health {
+        respond "OK" 200
+    }
+}
+
+{% if redirect_http_to_https and https_enabled %}
+# HTTP to HTTPS redirect
+http://{{ domain_name }}{% if url_prefix %}{{ url_prefix }}{% endif %} {
+    redir https://{{ domain_name }}{% if url_prefix %}{{ url_prefix }}{% endif %}{uri} permanent
+}
+{% endif %}
