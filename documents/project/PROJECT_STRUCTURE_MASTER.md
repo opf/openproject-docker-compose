@@ -29,9 +29,9 @@ openproject-docker-compose/
 │   │   ├── unit/integration/e2e/       # Organized test categories
 │   │   ├── scripts/                    # Test runners & utilities
 │   │   └── documentation/              # Testing guides
-│   ├── control_flows/                  # Design-first development
+│   ├── design_specs/                   # Design-first development
 │   │   ├── CONTROL_FLOWS_SPEC.md       # YAML specifications
-│   │   ├── control_flow_manager.py     # AI communication engine
+│   │   ├── control_flow_manager.py     # Management tools
 │   │   └── analyze_control_flows.py    # Validation tools
 │   ├── dependencies/                   # Dependency tracking
 │   │   ├── DEPENDENCIES.md             # Classified dependencies
@@ -74,7 +74,7 @@ openproject-config-manager/
 │       ├── e2e/                        # 19 end-to-end tests
 │       └── scripts/                    # Specialized test runners
 ├── 📋 MANAGEMENT SYSTEMS
-│   ├── control_flows/                  # Design-first specifications
+│   ├── design_specs/                   # Design-first specifications
 │   ├── dependencies/                   # Python package management
 │   └── documents/                      # Centralized documentation
 └── 🔧 CONFIGURATION
@@ -88,7 +88,7 @@ openproject-deploy-manager/
 │   └── src/                            # Deployment utilities
 ├── 📋 MANAGEMENT SYSTEMS
 │   ├── testing/                        # Professional testing framework
-│   ├── control_flows/                  # Deployment workflow specs
+│   ├── design_specs/                   # Deployment workflow specs
 │   └── dependencies/                   # Deployment tool dependencies
 └── 📚 DOCUMENTATION
     └── README.md                       # Deployment documentation
@@ -105,7 +105,7 @@ openproject-prober/
 ├── 📋 MANAGEMENT SYSTEMS
 │   ├── testing/                        # Professional testing framework
 │   │   └── integration/                # Migrated CI_Tests
-│   ├── control_flows/                  # Probing workflow specs
+│   ├── design_specs/                   # Probing workflow specs
 │   └── dependencies/                   # Probing tool dependencies
 └── 📊 DATA & CONFIG
     ├── data/                           # Probe data storage
@@ -123,7 +123,7 @@ openproject-prober/
 - `testing/documentation/framework_overview.md` - Testing guides
 
 ### 2. Control Flow System (All Repos)
-**Structure**: `control_flows/{CONTROL_FLOWS_SPEC.md,control_flow_manager.py,analyze_control_flows.py}`
+**Structure**: `design_specs/{CONTROL_FLOWS_SPEC.md,control_flow_manager.py,analyze_control_flows.py}`
 **Purpose**: Design-first development with AI communication
 **Status**: YAML-based specifications across all repositories
 **Key Features**:
@@ -220,7 +220,7 @@ code openproject.code-workspace # Multi-repo VS Code environment
 
 ### Control Flows
 ```bash
-cd control_flows/
+cd design_specs/
 python analyze_control_flows.py    # Validate flows
 python control_flow_manager.py     # Apply planned changes
 ```
