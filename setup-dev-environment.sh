@@ -44,30 +44,27 @@ cd external/prober && git checkout main && cd ../..
 echo -e "\n🐍 Step 3: Setting up Python environment..."
 
 # Check for config-manager dependencies
-if [[ -f "external/config-manager/requirements.txt" ]]; then
+if [[ -f "external/config-manager/pyproject.toml" ]]; then
     echo "   Installing config-manager dependencies..."
     cd external/config-manager
     if [[ ! -d "venv" ]]; then
         python3 -m venv venv
     fi
     source venv/bin/activate
-    pip install -r requirements.txt
+    pip install -e .[dev]
     pip install -e .
     deactivate
     cd ../..
 fi
 
 # Check for main project dependencies
-if [[ -f "requirements.txt" ]]; then
+if [[ -f "pyproject.toml" ]]; then
     echo "   Installing main project dependencies..."
     if [[ ! -d "venv" ]]; then
         python3 -m venv venv
     fi
     source venv/bin/activate
-    pip install -r requirements.txt
-    if [[ -f "requirements-dev.txt" ]]; then
-        pip install -r requirements-dev.txt
-    fi
+    pip install -e .[dev]
     deactivate
 fi
 

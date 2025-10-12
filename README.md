@@ -317,3 +317,14 @@ worker:
 - `yamllint` - YAML validation (if validating compose files)
 - `shellcheck` - Shell script linting (if using shell scripts)
 
+## 📚 Documentation
+
+For comprehensive documentation, architecture details, and development guides, see the [`documents/`](documents/) directory:
+
+- **New to the project?** Start with [`documents/project/PROJECT_OVERVIEW.md`](documents/project/PROJECT_OVERVIEW.md)
+- **Need technical details?** Review [`documents/architecture/ARCHITECTURE.md`](documents/architecture/ARCHITECTURE.md)  
+- **Setting up development?** Check [`documents/guides/SUBMODULES_GUIDE.md`](documents/guides/SUBMODULES_GUIDE.md)
+- **Want to contribute?** See [`documents/migration/MIGRATION_PLAN.md`](documents/migration/MIGRATION_PLAN.md)
+
+All design documents, guides, and project documentation are organized in the [`documents/`](documents/) directory with detailed README files for navigation.
+

@@ -1,0 +1,22 @@
+# Test Results and Artifacts
+
+This directory contains test execution results, coverage reports, and other testing artifacts.
+
+**These files are automatically generated and should not be committed to version control.**
+
+## Contents
+
+- `test_results.json` - Comprehensive test results from run_all_tests.py
+- `coverage.xml` - Coverage report in XML format (for CI)
+- `htmlcov/` - HTML coverage reports
+- `*.log` - Test execution logs
+- `pytest-report.html` - Pytest HTML reports
+
+## Cleanup
+
+To clean up test artifacts:
+```bash
+rm -rf testing/results/*
+```
+
+Test artifacts are automatically ignored by git through `.gitignore`.
