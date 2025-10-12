@@ -1,3 +1,9 @@
 [submodule "external/prober"]
 	path = external/prober
 	url = https://github.com/JustinCBates/docker_prober_utility.git
+[submodule "external/config-manager"]
+	path = external/config-manager
+	url = https://github.com/JustinCBates/openproject-config-manager.git
+[submodule "external/deploy-manager"]
+	path = external/deploy-manager
+	url = https://github.com/JustinCBates/openproject-deploy-manager.git
