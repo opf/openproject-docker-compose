@@ -167,4 +167,4 @@ These features build upon the TUI Form Designer architecture with separate engin
 For implementation details, see:
 - `src/tui_form_engine/` - Core engine
 - `external/config-manager/run_flow_direct.py` - Direct runner tool
-- `external/config-manager/src/openproject_config_manager/collector/config_tui.layout.yml` - Example layout
+- `external/config-manager/src/openproject_config_manager/collector/layouts/config_tui.layout.yml` - Example layout
