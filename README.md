@@ -81,12 +81,13 @@ openproject-docker-compose/
 ├── external/config-manager/    # Interactive configuration management
 ├── external/deploy-manager/    # Deployment utilities  
 ├── external/prober/            # Docker environment probing
+├── external/control-flow/      # Control flow engine and visualization
 └── openproject.code-workspace  # VS Code multi-repo workspace
 ```
 
 ### VS Code Workspace Features
 
-- **Multi-Repository Support**: All 4 repositories accessible as separate folders
+- **Multi-Repository Support**: All 5 repositories accessible as separate folders
 - **Integrated Git**: Submodule detection and management
 - **Python Development**: Configured paths, linting, formatting, testing
 - **Built-in Tasks**: Test, format, lint, and submodule management

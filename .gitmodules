@@ -7,6 +7,9 @@
 [submodule "external/deploy-manager"]
 	path = external/deploy-manager
 	url = https://github.com/JustinCBates/openproject-deploy-manager.git
+[submodule "external/control-flow"]
+	path = external/control-flow
+	url = https://github.com/JustinCBates/control-flow.git
 [submodule "external/tui-form-designer"]
 	path = external/tui-form-designer
 	url = https://github.com/JustinCBates/TUI_Form_Designer.git

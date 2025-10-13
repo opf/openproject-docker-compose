@@ -17,6 +17,10 @@
             "path": "external/prober"
         },
         {
+            "name": "control-flow",
+            "path": "external/control-flow"
+        },
+        {
             "name": "tui-form-designer",
             "path": "external/tui-form-designer"
         }
