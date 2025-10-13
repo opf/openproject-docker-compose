@@ -13,3 +13,6 @@
 [submodule "external/tui-form-designer"]
 	path = external/tui-form-designer
 	url = https://github.com/JustinCBates/TUI_Form_Designer.git
+[submodule "external/dependency-manager"]
+	path = external/dependency-manager
+	url = https://github.com/JustinCBates/dependency-manager.git
