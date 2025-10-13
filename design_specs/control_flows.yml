@@ -1,0 +1,170 @@
+# Control Flow Specification - OpenProject Docker Compose
+# Design-first specification for iterative development
+# Use this to communicate orchestration flow changes before implementation exists
+
+component:
+  name: "openproject-docker-compose"
+  description: "Main OpenProject Docker Compose orchestration"
+  version: "1.0.0"
+
+entry_points:
+  main_stack:
+    status: "IMPLEMENTED"
+    description: "Main OpenProject stack orchestration"
+    calls: ["web", "db", "cache", "proxy", "worker", "cron", "seeder", "autoheal"]
+    
+  control_operations:
+    status: "IMPLEMENTED"
+    description: "Control plane operations (backup/upgrade)"
+    flow_id: "control_operations_flow"
+    
+  proxy_integration:
+    status: "IMPLEMENTED"
+    description: "Caddy proxy integration and routing"
+    flow_id: "proxy_flow"
+    
+  stack_lifecycle:
+    status: "IMPLEMENTED"
+    description: "Stack lifecycle management"
+    flow_id: "lifecycle_flow"
+
+flows:
+  main_orchestration_flow:
+    description: "Primary OpenProject Stack Orchestration"
+    steps:
+      - step_id: "init"
+        name: "Initialize Stack"
+        status: "IMPLEMENTED"
+        description: "Set up Docker Compose environment"
+        
+      - step_id: "network_setup"
+        name: "Network Configuration"
+        status: "IMPLEMENTED"
+        description: "Configure Docker networks and connectivity"
+        
+      - step_id: "volume_setup"
+        name: "Volume Configuration"
+        status: "IMPLEMENTED"
+        description: "Set up persistent volumes and storage"
+        
+      - step_id: "service_orchestration"
+        name: "Service Orchestration"
+        status: "IMPLEMENTED"
+        description: "Start and coordinate all OpenProject services"
+        sub_flows: ["database_flow", "cache_flow", "web_flow", "proxy_flow"]
+        
+      - step_id: "health_verification"
+        name: "Health Verification"
+        status: "IMPLEMENTED"
+        description: "Verify all services are healthy and responding"
+
+  control_operations_flow:
+    description: "Control Plane Operations"
+    steps:
+      - step_id: "backup_init"
+        name: "Initialize Backup"
+        status: "IMPLEMENTED"
+        description: "Set up backup environment and validate readiness"
+        
+      - step_id: "backup_execution"
+        name: "Execute Backup"
+        status: "IMPLEMENTED"
+        description: "Perform database and file backup operations"
+        
+      - step_id: "upgrade_preparation"
+        name: "Upgrade Preparation"
+        status: "IMPLEMENTED"
+        description: "Prepare system for OpenProject upgrade"
+        
+      - step_id: "upgrade_execution"
+        name: "Execute Upgrade"
+        status: "IMPLEMENTED"
+        description: "Perform OpenProject version upgrade"
+
+  proxy_flow:
+    description: "Caddy Proxy Integration"
+    steps:
+      - step_id: "config_generation"
+        name: "Generate Proxy Config"
+        status: "IMPLEMENTED"
+        description: "Generate Caddyfile from templates"
+        
+      - step_id: "ssl_setup"
+        name: "SSL Configuration"
+        status: "IMPLEMENTED"
+        description: "Configure SSL certificates and HTTPS"
+        
+      - step_id: "routing_setup"
+        name: "Setup Routing"
+        status: "IMPLEMENTED"
+        description: "Configure reverse proxy routing to OpenProject"
+        
+      - step_id: "health_monitoring"
+        name: "Health Monitoring"
+        status: "IMPLEMENTED"
+        description: "Monitor proxy health and connectivity"
+
+  lifecycle_flow:
+    description: "Stack Lifecycle Management"
+    steps:
+      - step_id: "startup"
+        name: "Stack Startup"
+        status: "IMPLEMENTED"
+        description: "Bring up the entire OpenProject stack"
+        
+      - step_id: "monitoring"
+        name: "Runtime Monitoring"
+        status: "IMPLEMENTED"
+        description: "Monitor stack health and performance"
+        
+      - step_id: "scaling"
+        name: "Service Scaling"
+        status: "PLANNED"
+        description: "Scale services based on load"
+        
+      - step_id: "shutdown"
+        name: "Graceful Shutdown"
+        status: "IMPLEMENTED"
+        description: "Gracefully shut down all services"
+
+artifacts:
+  docker_compose_config:
+    description: "Main Docker Compose configuration"
+    format: "YAML"
+    
+  caddyfile_config:
+    description: "Generated Caddy proxy configuration"
+    format: "Caddyfile"
+    
+  environment_config:
+    description: "Environment variables and secrets"
+    format: "ENV"
+    
+  backup_archives:
+    description: "Database and file backups"
+    format: "TAR/SQL"
+    
+  health_reports:
+    description: "Stack health and monitoring data"
+    format: "JSON"
+
+decision_points:
+  ssl_mode:
+    description: "SSL certificate mode"
+    options: ["auto", "manual", "disabled"]
+    default: "auto"
+    
+  backup_strategy:
+    description: "Backup retention strategy"
+    options: ["daily", "weekly", "manual"]
+    default: "daily"
+    
+  scaling_strategy:
+    description: "Service scaling approach"
+    options: ["manual", "auto", "disabled"]
+    default: "manual"
+
+implementation_status:
+  overall: "IMPLEMENTED"
+  last_updated: "2025-10-13"
+  notes: "Core orchestration implemented, scaling features planned"
