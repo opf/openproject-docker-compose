@@ -1,0 +1,19 @@
+#!/bin/bash
+# DEPRECATED: This script has been migrated to the centralized dependency-manager
+# 
+# New location: /opt/openproject/external/dependency-manager
+# New command: dependency-manager validate
+#
+# Please use the new centralized system:
+#   cd /opt/openproject/external/dependency-manager
+#   python3 -m dependency_manager.cli validate
+#
+# This script will be removed in a future version.
+
+echo "⚠️  DEPRECATED: This script has been replaced by the centralized dependency-manager"
+echo "📍 New location: /opt/openproject/external/dependency-manager"
+echo "🚀 New command: dependency-manager validate"
+echo ""
+echo "Please update your workflows to use the new system."
+echo "See README.md in dependency-manager for migration guide."
+exit 1
