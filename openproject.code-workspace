@@ -21,6 +21,10 @@
             "path": "external/control-flow"
         },
         {
+            "name": "dependency-manager",
+            "path": "external/dependency-manager"
+        },
+        {
             "name": "tui-form-designer",
             "path": "external/tui-form-designer"
         }
