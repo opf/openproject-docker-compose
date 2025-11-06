@@ -29,7 +29,7 @@ x-op-app: &app
 
 services:
   db:
-    image: postgres:13
+    image: postgres:17
     <<: *restart_policy
     stop_grace_period: "3s"
     volumes:
