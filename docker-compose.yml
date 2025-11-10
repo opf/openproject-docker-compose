@@ -26,6 +26,12 @@ x-op-app: &app
     IMAP_ENABLED: "${IMAP_ENABLED:-false}"
   volumes:
     - "${OPDATA:-opdata}:/var/openproject/assets"
+x-op-app-depends: &app-depends
+    depends_on:
+      seeder:
+        condition: service_completed_successfully
+      cache:
+        condition: service_started
 
 services:
   db:
@@ -56,20 +62,17 @@ services:
     ports:
       - "${PORT:-8080}:80"
     depends_on:
-      - web
+      web:
+        condition: service_healthy
     networks:
       - frontend
 
   web:
-    <<: *app
+    <<: [*app, *app-depends]
     command: "./docker/prod/web"
     networks:
       - frontend
       - backend
-    depends_on:
-      - db
-      - cache
-      - seeder
     labels:
       - autoheal=true
     healthcheck:
@@ -89,24 +92,16 @@ services:
       AUTOHEAL_INTERVAL: 30
 
   worker:
-    <<: *app
+    <<: [*app, *app-depends]
     command: "./docker/prod/worker"
     networks:
       - backend
-    depends_on:
-      - db
-      - cache
-      - seeder
 
   cron:
-    <<: *app
+    <<: [*app, *app-depends]
     command: "./docker/prod/cron"
     networks:
       - backend
-    depends_on:
-      - db
-      - cache
-      - seeder
 
   seeder:
     <<: *app
@@ -114,3 +109,5 @@ services:
     restart: on-failure
     networks:
       - backend
+    depends_on:
+      - db
