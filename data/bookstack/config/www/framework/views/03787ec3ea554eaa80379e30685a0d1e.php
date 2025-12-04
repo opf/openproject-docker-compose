@@ -1,0 +1,1 @@
+<a class="px-m py-s skip-to-content-link print-hidden" href="#main-content"><?php echo e(trans('common.skip_to_main_content')); ?></a><?php /**PATH /app/www/resources/views/layouts/parts/skip-to-content.blade.php ENDPATH**/ ?>

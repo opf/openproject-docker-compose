@@ -1,0 +1,3 @@
+/usr/bin/mariadbd, Version: 11.4.8-MariaDB-log (Alpine Linux). started with:
+Tcp port: 3306  Unix socket: /run/mysqld/mysqld.sock
+Time		    Id Command	Argument

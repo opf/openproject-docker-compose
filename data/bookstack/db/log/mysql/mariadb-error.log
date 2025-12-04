@@ -1,0 +1,64 @@
+251204 21:47:58 mysqld_safe Starting mariadbd daemon with databases from /config/databases
+2025-12-04 21:47:58 0 [Note] Starting MariaDB 11.4.8-MariaDB-log source revision c4ed889b74ed95fa8b4eaf96610d4c1480b346a4 server_uid 0wVSphTgntetLzEjsIQh7uHf+ws= as process 492
+2025-12-04 21:47:58 0 [Note] InnoDB: Compressed tables use zlib 1.3.1
+2025-12-04 21:47:58 0 [Note] InnoDB: Number of transaction pools: 1
+2025-12-04 21:47:58 0 [Note] InnoDB: Using crc32 + pclmulqdq instructions
+2025-12-04 21:47:58 0 [Note] InnoDB: Using Linux native AIO
+2025-12-04 21:47:58 0 [Note] InnoDB: innodb_buffer_pool_size_max=256m, innodb_buffer_pool_size=256m
+2025-12-04 21:47:58 0 [Note] InnoDB: Completed initialization of buffer pool
+2025-12-04 21:47:58 0 [Note] InnoDB: Buffered log writes (block size=512 bytes)
+2025-12-04 21:47:58 0 [Note] InnoDB: End of log at LSN=47629
+2025-12-04 21:47:58 0 [Note] InnoDB: Opened 3 undo tablespaces
+2025-12-04 21:47:58 0 [Note] InnoDB: 128 rollback segments in 3 undo tablespaces are active.
+2025-12-04 21:47:58 0 [Note] InnoDB: Setting file './ibtmp1' size to 12.000MiB. Physically writing the file full; Please wait ...
+2025-12-04 21:47:58 0 [Note] InnoDB: File './ibtmp1' size is now 12.000MiB.
+2025-12-04 21:47:58 0 [Note] InnoDB: log sequence number 47629; transaction id 14
+2025-12-04 21:47:58 0 [Note] Plugin 'FEEDBACK' is disabled.
+2025-12-04 21:47:58 0 [Note] InnoDB: Loading buffer pool(s) from /config/databases/ib_buffer_pool
+2025-12-04 21:47:58 0 [Note] Plugin 'wsrep-provider' is disabled.
+2025-12-04 21:47:58 0 [Note] InnoDB: Buffer pool(s) load completed at 251204 21:47:58
+2025-12-04 21:47:59 0 [Note] Server socket created on IP: '0.0.0.0', port: '3306'.
+2025-12-04 21:47:59 0 [Note] Server socket created on IP: '::', port: '3306'.
+2025-12-04 21:47:59 0 [Note] mariadbd: Event Scheduler: Loaded 0 events
+2025-12-04 21:47:59 0 [Note] /usr/bin/mariadbd: ready for connections.
+Version: '11.4.8-MariaDB-log'  socket: '/run/mysqld/mysqld.sock'  port: 3306  Alpine Linux
+2025-12-04 21:47:59 4 [Warning] Aborted connection 4 to db: 'unconnected' user: 'unauthenticated' host: 'localhost' (This connection closed normally without authentication)
+2025-12-04 21:47:59 6 [Warning] Access denied for user 'root'@'localhost' (using password: YES)
+2025-12-04 21:50:47 7 [Warning] Aborted connection 7 to db: 'unconnected' user: 'unauthenticated' host: 'bookstack.openproject-docker_backend' (This connection closed normally without authentication)
+2025-12-04 21:50:52 8 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:52 9 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:52 10 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:52 11 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:55 12 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:55 13 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:55 14 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:55 15 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:55 16 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:55 17 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:55 18 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:55 19 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:57 20 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:57 21 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:57 22 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:57 23 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:57 24 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:57 25 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:57 26 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:50:57 27 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:14 28 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:14 29 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:14 30 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:14 31 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:14 32 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:14 33 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:14 34 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:14 35 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:29 36 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:29 37 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:29 38 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:29 39 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:29 40 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:29 41 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:29 42 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:51:29 43 [Warning] Access denied for user 'database_username'@'bookstack.openproject-docker_backend' (using password: YES)
+2025-12-04 21:53:07 44 [Warning] Aborted connection 44 to db: 'unconnected' user: 'unauthenticated' host: 'bookstack.openproject-docker_backend' (This connection closed normally without authentication)
