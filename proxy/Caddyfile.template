@@ -1,17 +1,59 @@
 :80 {
-    reverse_proxy * http://${APP_HOST}:8080 {
-        # The following directives are needed to make the proxy forward explicitly the X-Forwarded-* headers. If unset,
-        # Caddy will reset them. See: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#defaults
-        # This is needed, if you are using a reverse proxy in front of the compose stack and Caddy is NOT your first
-        # point of contact.
-        # When using Caddy is reachable as a first point of contact, it is highly recommended to configure the server's
-        # global `trusted_proxies` directive. See: https://caddyserver.com/docs/caddyfile/options#trusted-proxies
+    # Basic Auth for the Gateway
+    # basic_auth /* {
+    #     {$GATEWAY_USER} {$GATEWAY_PASSWORD_HASH}
+    # }
 
-        header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
-        header_up X-Forwarded-For {header.X-Forwarded-For}
+    # Dashboard (Simple landing page)
+    handle / {
+        header Content-Type text/html
+        respond "<html><body><h1>Antigravity Gateway</h1><ul><li><a href='/openproject/'>OpenProject</a></li><li><a href='/chat/'>Mattermost (Chat)</a></li><li><a href='/wiki/'>BookStack (Wiki)</a></li><li><a href='/ideation/'>Excalidraw (Ideation)</a></li><li><a href='/app/'><strong>Custom PM Tool</strong></a></li></ul></body></html>" 200
     }
 
-    file_server
+    # OpenProject
+    handle /openproject* {
+        reverse_proxy http://web:8080 {
+            header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
+            header_up X-Forwarded-For {header.X-Forwarded-For}
+            header_up Host {host}
+        }
+    }
+
+    # Mattermost
+    handle /chat* {
+        reverse_proxy http://mattermost:8065 {
+             header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
+             header_up X-Forwarded-For {header.X-Forwarded-For}
+             header_up Host {host}
+        }
+    }
+
+    # BookStack
+    handle /wiki* {
+        reverse_proxy http://bookstack:80 {
+             header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
+             header_up X-Forwarded-For {header.X-Forwarded-For}
+             header_up Host {host}
+        }
+    }
+
+    # Excalidraw
+    handle /ideation* {
+        reverse_proxy http://excalidraw:80 {
+             header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
+             header_up X-Forwarded-For {header.X-Forwarded-For}
+             header_up Host {host}
+        }
+    }
+
+    # Custom PM Tool
+    handle /app* {
+        reverse_proxy http://custom-pm-app-1:3000 {
+             header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
+             header_up X-Forwarded-For {header.X-Forwarded-For}
+             header_up Host {host}
+        }
+    }
 
     log
 }
