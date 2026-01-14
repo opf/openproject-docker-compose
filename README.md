@@ -62,6 +62,10 @@ To prevent this you can add the `--ignore-buildable` option, running `docker com
 To be able to use the collaboration server it is necessary to have a hostname defined (localhost will not work).
 This means that it is necessary to configure the `OPENPROJECT_HOST__NAME` and the `COLLABORATIVE_SERVER_URL` or to setup HTTPS/SSL and bind a domain to the server.
 
+Check the .env.example file for an example.
+
+> Important! Make sure to override the default secret by adjusting the docker-compose file or setting the `COLLABORATIVE_SERVER_SECRET` variable.
+
 ### HTTPS/SSL
 
 By default OpenProject starts with the HTTPS option **enabled**, but it **does not** handle SSL termination itself. This
