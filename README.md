@@ -57,6 +57,18 @@ If this happens during `docker compose pull` this is simply a warning as well.
 But it will result in the command's exit code to be a failure even though all images are pulled.
 To prevent this you can add the `--ignore-buildable` option, running `docker compose pull  --ignore-buildable`.
 
+### Collaboration server
+
+The collaboration server is enabled by default when setting up this application.
+
+> Important! Make sure to override the default secret by adjusting the docker-compose file or setting the `COLLABORATIVE_SERVER_SECRET` variable.
+
+When running it in *localhost* it's necessary to make a few adjustments:
+
+1. Either define a local alias (adding an entry to your hosts file) or setup HTTPS/SSL
+2. Define the `OPENPROJECT_HOST__NAME`, and the `COLLABORATIVE_SERVER_URL` in your .env file (you can look at .env.example for reference)
+3. Restart the containers
+
 ### HTTPS/SSL
 
 By default OpenProject starts with the HTTPS option **enabled**, but it **does not** handle SSL termination itself. This
