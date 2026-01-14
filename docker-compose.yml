@@ -119,7 +119,7 @@ services:
       - backend
 
   hocuspocus:
-    image: openproject/hocuspocus:release-ccd9c565
+    image: openproject/hocuspocus:release-38128805
     environment:
       SECRET: ${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}
     networks:
