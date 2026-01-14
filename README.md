@@ -59,12 +59,15 @@ To prevent this you can add the `--ignore-buildable` option, running `docker com
 
 ### Collaboration server
 
-To be able to use the collaboration server it is necessary to have a hostname defined (localhost will not work).
-This means that it is necessary to configure the `OPENPROJECT_HOST__NAME` and the `COLLABORATIVE_SERVER_URL` or to setup HTTPS/SSL and bind a domain to the server.
-
-Check the .env.example file for an example.
+The collaboration server is enabled by default when setting up this application.
 
 > Important! Make sure to override the default secret by adjusting the docker-compose file or setting the `COLLABORATIVE_SERVER_SECRET` variable.
+
+When running it in *localhost* it's necessary to make a few adjustments:
+
+1. Either define a local alias (adding an entry to your hosts file) or setup HTTPS/SSL
+2. Define the `OPENPROJECT_HOST__NAME`, and the `COLLABORATIVE_SERVER_URL` in your .env file (you can look at .env.example for reference)
+3. Restart the containers
 
 ### HTTPS/SSL
 
