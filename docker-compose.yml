@@ -60,12 +60,13 @@ services:
     depends_on:
       - web
     networks:
-      - frontend
+      frontend:
+        aliases:
+          - "${OPENPROJECT_HOST__NAME:-localhost:8080}"
 
   web:
     <<: *app
     command: "./docker/prod/web"
-    hostname: "${OPENPROJECT_HOST__NAME:-localhost:8080}"
     networks:
       - frontend
       - backend
@@ -123,6 +124,5 @@ services:
     environment:
       SECRET: ${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}
     networks:
-      - backend
       - frontend
     <<: *restart_policy
