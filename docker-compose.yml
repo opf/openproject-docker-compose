@@ -122,6 +122,8 @@ services:
     image: openproject/hocuspocus:release-38128805
     environment:
       SECRET: ${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}
+      OPENPROJECT_DIRECT_URL: "${OPENPROJECT_URL:-http://web}"
+      OPENPROJECT_HOST: "${OPENPROJECT_HOST__NAME:-localhost:8080}"
     networks:
       - backend
       - frontend
