@@ -12,6 +12,7 @@ x-op-image: &image
   image: openproject/openproject:${TAG:-15-slim}
 x-op-app: &app
   <<: [*image, *restart_policy]
+  pull_policy: "${PULL_POLICY:-always}"
   environment:
     OPENPROJECT_HTTPS: "${OPENPROJECT_HTTPS:-true}"
     OPENPROJECT_HOST__NAME: "${OPENPROJECT_HOST__NAME:-localhost:8080}"
@@ -119,7 +120,8 @@ services:
       - backend
 
   hocuspocus:
-    image: openproject/hocuspocus:release-38128805
+    image: openproject/hocuspocus:${HOCUSPOCUS_TAG:-dev-latest}
+    pull_policy: always
     environment:
       SECRET: ${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}
       OPENPROJECT_URL: "${OPENPROJECT_URL:-http://web:8080}"
