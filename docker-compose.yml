@@ -121,7 +121,7 @@ services:
 
   hocuspocus:
     image: openproject/hocuspocus:${HOCUSPOCUS_TAG:-dev-latest}
-    pull_policy: always
+    pull_policy: "${PULL_POLICY:-always}"
     environment:
       SECRET: ${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}
       OPENPROJECT_URL: "${OPENPROJECT_URL:-http://web:8080}"
