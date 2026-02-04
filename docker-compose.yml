@@ -126,7 +126,6 @@ services:
     environment:
       SECRET: ${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}
       OPENPROJECT_URL: "${OPENPROJECT_URL:-http://web:8080}"
-      OPENPROJECT_HOST: "${OPENPROJECT_HOST__NAME:-localhost:8080}"
     networks:
       - backend
       - frontend
