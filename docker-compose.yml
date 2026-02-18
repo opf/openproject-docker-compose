@@ -33,7 +33,13 @@ x-op-app: &app
 
 services:
   db:
-    image: postgres:13
+    # The default here should really be 17 but is still 13 as to not break existing setups.
+    # New installations using the provided .env.example will use 17 to begin with.
+    # The default here will change to 17 as well with the next major update (18).
+    #
+    # Refer to the docs on how to upgrade to postgres 17 before then:
+    #   https://www.openproject.org/docs/installation-and-operations/misc/migration-to-postgresql17/
+    image: postgres:${POSTGRES_VERSION:-13}
     <<: *restart_policy
     stop_grace_period: "3s"
     volumes:
