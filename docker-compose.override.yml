@@ -1,0 +1,160 @@
+# OpenProject 17 Community Edition — Live Solutions WSL2 override
+# Purpose: attach to existing ai-stack_ai-net for Cloudflare Tunnel, remove host port publishing,
+#          apply resource limits, and mount brand assets + custom initializer.
+# This file is merged with upstream docker-compose.yml and survives `git pull` updates.
+
+services:
+  db:
+    # Dedicated postgres instance for OpenProject (segregated from ai-postgres)
+    image: postgres:17
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1G
+    volumes:
+      - "openproject_pgdata:/var/lib/postgresql/data"
+
+  cache:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+
+  proxy:
+    # No host port publish — Cloudflare Tunnel reaches this on ai-stack_ai-net via container name.
+    ports: !reset []
+    networks:
+      - frontend
+      - ai-stack_ai-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 128M
+    volumes:
+      - "./proxy/Caddyfile:/etc/caddy/Caddyfile:ro"
+    healthcheck:
+      test: ["CMD", "caddy", "version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  web:
+    hostname: projects.livesolutionsnow.com
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2G
+    volumes:
+      - "${OPDATA:-opdata}:/var/openproject/assets"
+      - "./custom-plugin/openproject-livesolutions:/usr/src/app/plugins/openproject-livesolutions:ro"
+      - "./openproject-config/initializers:/app/config/initializers/custom:ro"
+      - "./custom-plugin/openproject-livesolutions/app/assets/stylesheets/livesolutions/theme.css:/app/public/stylesheets/livesolutions-theme.css:ro"
+    # Ensure container restart on failure and autoheal supervision.
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080${OPENPROJECT_RAILS__RELATIVE__URL_ROOT:-}/health_checks/default"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    labels:
+      - autoheal=true
+
+  worker:
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1G
+    volumes:
+      - "${OPDATA:-opdata}:/var/openproject/assets"
+      - "./custom-plugin/openproject-livesolutions:/usr/src/app/plugins/openproject-livesolutions:ro"
+      - "./openproject-config/initializers:/app/config/initializers/custom:ro"
+      - "./custom-plugin/openproject-livesolutions/app/assets/stylesheets/livesolutions/theme.css:/app/public/stylesheets/livesolutions-theme.css:ro"
+
+  cron:
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+    volumes:
+      - "${OPDATA:-opdata}:/var/openproject/assets"
+      - "./custom-plugin/openproject-livesolutions:/usr/src/app/plugins/openproject-livesolutions:ro"
+      - "./openproject-config/initializers:/app/config/initializers/custom:ro"
+      - "./custom-plugin/openproject-livesolutions/app/assets/stylesheets/livesolutions/theme.css:/app/public/stylesheets/livesolutions-theme.css:ro"
+
+  seeder:
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1G
+
+  autoheal:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+    # Restart the autoheal supervisor if it exits.
+    restart: unless-stopped
+
+  hocuspocus:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('net').createConnection(1234,'localhost').on('connect',function(){this.end()}).on('error',function(){process.exit(1)})"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  relay:
+    build:
+      context: ./smtp-relay
+      dockerfile: Dockerfile
+    image: openproject-smtp-relay:local
+    restart: unless-stopped
+    environment:
+      RELAY_LISTEN_HOST: 0.0.0.0
+      RELAY_LISTEN_PORT: 587
+      GRAPH_TENANT_ID: ${GRAPH_TENANT_ID}
+      GRAPH_CLIENT_ID: ${GRAPH_CLIENT_ID}
+      GRAPH_CLIENT_SECRET: ${GRAPH_CLIENT_SECRET}
+      DEFAULT_SENDER_UPN: ${DEFAULT_SENDER_UPN:-general@livesolutionsnow.com}
+      ALLOWED_SENDERS: ${ALLOWED_SENDERS:-general@livesolutionsnow.com,anthony@livesolutionsnow.com}
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket; s=socket.socket(); s.connect(('127.0.0.1',587)); s.close()"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  ai-stack_ai-net:
+    external: true
+    name: ai-stack_ai-net
+
+volumes:
+  openproject_pgdata:

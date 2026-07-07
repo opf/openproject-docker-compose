@@ -1,0 +1,20 @@
+:80 {
+    # Health check endpoint that bypasses Cloudflare Access for external monitoring.
+    # Responds on /healthz regardless of host so uptime monitors can hit it directly.
+    handle /healthz {
+        respond "OK" 200
+    }
+
+    reverse_proxy /hocuspocus* hocuspocus:1234
+
+    reverse_proxy * http://web:8080 {
+        # Public traffic is always HTTPS via Cloudflare Tunnel, so tell Rails/OpenProject
+        # the original protocol was HTTPS. This prevents redirect loops between HTTP and HTTPS.
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-For {header.X-Forwarded-For}
+    }
+
+    file_server
+
+    log
+}
