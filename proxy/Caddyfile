@@ -1,6 +1,8 @@
 :80 {
-    # Health check endpoint that bypasses Cloudflare Access for external monitoring.
-    # Responds on /healthz regardless of host so uptime monitors can hit it directly.
+    # Global monitoring endpoint reachable on status.livesolutionsnow.com.
+    # The Caddy default virtual host will serve this for any hostname; the
+    # Cloudflare Tunnel routes status.livesolutionsnow.com to this container
+    # without Access, so no authentication is required.
     handle /healthz {
         respond "OK" 200
     }

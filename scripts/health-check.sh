@@ -131,16 +131,7 @@ else
   warn "Public URL ${PUBLIC_URL}/login not reachable (may be expected from this host)"
 fi
 
-# ---------------------------------------------------------------------------
-# 7b. Public Access-bypass health endpoint is reachable (Cloudflare WAF exclusion
-#     or direct monitoring via http://proxy:80/healthz)
-# ---------------------------------------------------------------------------
-log "Checking public /healthz bypass endpoint via Cloudflare Tunnel..."
-if curl -fsS -L --max-time 30 "${PUBLIC_URL}/healthz" 2>/dev/null | grep -q "OK"; then
-  log "OK: public /healthz bypass endpoint returns OK"
-else
-  warn "Public /healthz bypass endpoint did not return OK"
-fi
+
 
 # ---------------------------------------------------------------------------
 # 8. Asset directory writable and not empty (after real use)
@@ -151,6 +142,16 @@ if [ "$asset_size" -ge 0 ] 2>/dev/null; then
   log "OK: asset directory accessible (size=${asset_size} bytes)"
 else
   warn "Could not determine asset directory size"
+fi
+
+# ---------------------------------------------------------------------------
+# 7b. Global status endpoint (status.livesolutionsnow.com/healthz)
+# ---------------------------------------------------------------------------
+log "Checking global status endpoint..."
+if curl -fsS -L --max-time 30 "https://status.livesolutionsnow.com/healthz" 2>/dev/null | grep -q "OK"; then
+  log "OK: https://status.livesolutionsnow.com/healthz returns OK"
+else
+  warn "Global status endpoint did not return OK"
 fi
 
 # ---------------------------------------------------------------------------
