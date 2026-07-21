@@ -471,10 +471,26 @@ td.subject.-with-hierarchy .wp-table--cell-container {
 
 /* Logo replacement — use locally-mounted Live Solutions brand assets.
    These paths are served directly by Caddy from /app/public/livesolutions-branding. */
-.op-logo--link[data-auto-theme-switcher-target="desktopLogo"] {
-  display: inline-block;
-  width: 180px;
-  height: 40px;
+
+/* Widen the logo container so the full LS wordmark is legible. */
+.op-logo,
+.op-logo--link,
+.op-logo--icon {
+  width: 260px !important;
+  max-width: 260px !important;
+}
+
+/* The icon mark is square-ish; don't stretch it to the wordmark width. */
+.op-logo--icon {
+  width: 48px !important;
+  max-width: 48px !important;
+}
+
+.op-logo--link[data-auto-theme-switcher-target="desktopLogo"],
+.op-logo--link {
+  display: inline-block !important;
+  width: 100% !important;
+  height: 100% !important;
   background-image: url('/livesolutions-branding/logo_openproject.png') !important;
   background-size: contain;
   background-repeat: no-repeat;
@@ -508,7 +524,7 @@ td.subject.-with-hierarchy .wp-table--cell-container {
 .op-logo,
 .op-logo--link,
 .op-logo--icon {
-  max-height: 48px;
+  max-height: 55px;
   display: flex;
   align-items: center;
 }
