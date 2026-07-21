@@ -7,7 +7,36 @@
         respond "OK" 200
     }
 
+    # Serve Live Solutions branding assets directly; Rails/Puma does not serve
+    # static files in production mode, and these must be reachable for the
+    # favicon, logos, and export headers.
+    handle_path /livesolutions-branding/* {
+        root * /app/public/livesolutions-branding
+        file_server
+    }
+
+    # Serve root favicon directly from the branding set.
+    handle /favicon.ico {
+        root * /app/public/livesolutions-branding
+        rewrite * /favicon.ico
+        file_server
+    }
+
     reverse_proxy /hocuspocus* hocuspocus:1234
+
+    # Agent terminal: proxied path to the host-side Flask receiver running
+    # on port 8799. The receiver serves the xterm.js page and upgrades
+    # WebSocket connections to a live opencode PTY session.
+    handle_path /agent-terminal/* {
+        reverse_proxy 172.18.0.1:8799 {
+            # WebSocket upgrade requires HTTP/1.1 to the backend.
+            transport http {
+                versions 1.1
+            }
+            # Preserve the original Host so Werkzeug's WebSocket upgrade doesn't 400.
+            header_up Host {host}
+        }
+    }
 
     reverse_proxy * http://web:8080 {
         # Public traffic is always HTTPS via Cloudflare Tunnel, so tell Rails/OpenProject

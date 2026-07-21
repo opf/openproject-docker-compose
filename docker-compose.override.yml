@@ -46,6 +46,7 @@ services:
           memory: 128M
     volumes:
       - "./proxy/Caddyfile:/etc/caddy/Caddyfile:ro"
+      - "./openproject-config/branding/generated:/app/public/livesolutions-branding:ro"
     healthcheck:
       test: ["CMD", "caddy", "version"]
       interval: 30s
@@ -66,6 +67,16 @@ services:
       - "./custom-plugin/openproject-livesolutions:/usr/src/app/plugins/openproject-livesolutions:ro"
       - "./openproject-config/initializers:/app/config/initializers/custom:ro"
       - "./custom-plugin/openproject-livesolutions/app/assets/stylesheets/livesolutions/theme.css:/app/public/stylesheets/livesolutions-theme.css:ro"
+      # Live Solutions branding overrides
+      - "./openproject-config/branding/generated:/app/public/livesolutions-branding:ro"
+      - "./openproject-config/branding/generated/favicon.ico:/app/public/favicon.ico:ro"
+      # Replace default OpenProject logo assets so exports and precompiled paths use LS branding
+      - "./openproject-config/branding/generated/logo_openproject.png:/app/app/assets/images/logo_openproject.png:ro"
+      - "./openproject-config/branding/generated/logo_openproject_white_big.png:/app/app/assets/images/logo_openproject_white_big.png:ro"
+      - "./openproject-config/branding/generated/apple-touch-icon-120x120.png:/app/app/assets/images/apple-touch-icon-120x120.png:ro"
+      # Override Rails view templates directly (plugin engine does not register view paths)
+      - "./custom-plugin/openproject-livesolutions/app/views/custom_styles/_inline_css_logo.erb:/app/app/views/custom_styles/_inline_css_logo.erb:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/common/_favicons.html.erb:/app/app/views/common/_favicons.html.erb:ro"
     # Ensure container restart on failure and autoheal supervision.
     restart: unless-stopped
     healthcheck:
@@ -89,6 +100,14 @@ services:
       - "./custom-plugin/openproject-livesolutions:/usr/src/app/plugins/openproject-livesolutions:ro"
       - "./openproject-config/initializers:/app/config/initializers/custom:ro"
       - "./custom-plugin/openproject-livesolutions/app/assets/stylesheets/livesolutions/theme.css:/app/public/stylesheets/livesolutions-theme.css:ro"
+      # Live Solutions branding overrides
+      - "./openproject-config/branding/generated:/app/public/livesolutions-branding:ro"
+      - "./openproject-config/branding/generated/favicon.ico:/app/public/favicon.ico:ro"
+      - "./openproject-config/branding/generated/logo_openproject.png:/app/app/assets/images/logo_openproject.png:ro"
+      - "./openproject-config/branding/generated/logo_openproject_white_big.png:/app/app/assets/images/logo_openproject_white_big.png:ro"
+      # Override Rails view templates directly (plugin engine does not register view paths)
+      - "./custom-plugin/openproject-livesolutions/app/views/custom_styles/_inline_css_logo.erb:/app/app/views/custom_styles/_inline_css_logo.erb:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/common/_favicons.html.erb:/app/app/views/common/_favicons.html.erb:ro"
 
   cron:
     env_file: .env
@@ -102,6 +121,11 @@ services:
       - "./custom-plugin/openproject-livesolutions:/usr/src/app/plugins/openproject-livesolutions:ro"
       - "./openproject-config/initializers:/app/config/initializers/custom:ro"
       - "./custom-plugin/openproject-livesolutions/app/assets/stylesheets/livesolutions/theme.css:/app/public/stylesheets/livesolutions-theme.css:ro"
+      # Live Solutions branding overrides
+      - "./openproject-config/branding/generated:/app/public/livesolutions-branding:ro"
+      - "./openproject-config/branding/generated/favicon.ico:/app/public/favicon.ico:ro"
+      - "./openproject-config/branding/generated/logo_openproject.png:/app/app/assets/images/logo_openproject.png:ro"
+      - "./openproject-config/branding/generated/logo_openproject_white_big.png:/app/app/assets/images/logo_openproject_white_big.png:ro"
 
   seeder:
     env_file: .env

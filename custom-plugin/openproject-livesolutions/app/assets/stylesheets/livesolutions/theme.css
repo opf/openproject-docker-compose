@@ -1,0 +1,524 @@
+/*
+ * Live Solutions OpenProject Brand Theme — dark / light mode aware.
+ * Palette: action #e7f452, primary #3366ff, secondary #0033cc, neutral #00071f
+ * Fonts: Owners Narrow/Wide (headings), TT Commons Pro (body)
+ * Radius signature: 0 var(--radius-l) 0 var(--radius-l) (top-right + bottom-left)
+ */
+
+:root {
+  --ls-action: #e7f452;
+  --ls-action-hover: #edf780;
+  --ls-action-dark: #6f7808;
+  --ls-primary: #3366ff;
+  --ls-primary-hover: #6188ff;
+  --ls-primary-dark: #002080;
+  --ls-secondary: #0033cc;
+  --ls-secondary-hover: #0033eb;
+  --ls-neutral: #00071f;
+  --ls-neutral-hover: #000823;
+  --ls-white: #ffffff;
+  --ls-black: #000000;
+  --ls-radius-l: 1.5rem;
+  --ls-radius: 0.75rem;
+  --ls-radius-s: 0.375rem;
+
+  /* Light mode (default) page variables */
+  --ls-bg-page: #f4f6f9;
+  --ls-bg-card: #ffffff;
+  --ls-bg-header: var(--ls-neutral);
+  --ls-bg-sidebar: var(--ls-neutral);
+  --ls-bg-menu-hover: rgba(231, 244, 82, 0.12);
+  --ls-text-page: #1a1f36;
+  --ls-text-muted: #5a6278;
+  --ls-text-on-dark: #ffffff;
+  --ls-link-color: var(--ls-primary);
+  --ls-link-hover: var(--ls-primary-hover);
+  --ls-border-color: rgba(0, 7, 31, 0.12);
+}
+
+/* Dark mode via OpenProject data-color-mode or explicit theme-dark class */
+body[data-color-mode="dark"],
+body.theme-dark,
+html[data-color-mode="dark"] {
+  --ls-bg-page: #0b0f1f;
+  --ls-bg-card: #141929;
+  --ls-bg-header: var(--ls-neutral);
+  --ls-bg-sidebar: var(--ls-neutral);
+  --ls-bg-menu-hover: rgba(231, 244, 82, 0.15);
+  --ls-text-page: #e8ebf2;
+  --ls-text-muted: #9aa3b8;
+  --ls-text-on-dark: #ffffff;
+  --ls-link-color: var(--ls-action);
+  --ls-link-hover: var(--ls-action-hover);
+  --ls-border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Respect OS preference when OP has not forced a mode */
+@media (prefers-color-scheme: dark) {
+  body:not([data-color-mode="light"]):not(.theme-light):not([data-color-mode="dark"]) {
+    --ls-bg-page: #0b0f1f;
+    --ls-bg-card: #141929;
+    --ls-bg-header: var(--ls-neutral);
+    --ls-bg-sidebar: var(--ls-neutral);
+    --ls-bg-menu-hover: rgba(231, 244, 82, 0.15);
+    --ls-text-page: #e8ebf2;
+    --ls-text-muted: #9aa3b8;
+    --ls-text-on-dark: #ffffff;
+    --ls-link-color: var(--ls-action);
+    --ls-link-hover: var(--ls-action-hover);
+    --ls-border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Typography */
+@font-face {
+  font-family: 'Owners Narrow';
+  src: local('Owners Narrow'), url('https://livesolutionsnow.com/wp-content/uploads/owners-narrow.woff2') format('woff2');
+  font-weight: 400 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'TT Commons Pro';
+  src: local('TT Commons Pro'), url('https://livesolutionsnow.com/wp-content/uploads/tt-commons-pro.woff2') format('woff2');
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+/* Base typography, page text/background, and light/dark mode awareness.
+   DO NOT apply page background/text to header/sidebar, which are always dark brand neutral. */
+body,
+#content-wrapper,
+.op-content,
+.work-package--card-view,
+.wp-table--cell-td,
+.inplace-edit--write-value,
+.form--field-instructions,
+.form--select-field,
+.form--text-field,
+.FormControl-input,
+.form-control,
+.op-primer-body {
+  font-family: 'TT Commons Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  color: var(--ls-text-page);
+  background-color: var(--ls-bg-page);
+}
+
+/* Headings / display text */
+h1, h2, h3, h4, h5, h6,
+.toolbar-title,
+.overview-chart--label,
+.widget-box--header-title,
+.attribute-header,
+#nav-search-title,
+.op-breadcrumb,
+.work-package--subject-type,
+.type--header,
+.op-app-header--title,
+.op-widget-box--header-title {
+  font-family: 'Owners Narrow', 'Owners Wide', 'TT Commons Pro', sans-serif !important;
+  letter-spacing: -0.02em;
+  color: var(--ls-text-page);
+}
+
+/* Menu item titles: white on dark sidebar, yellow on hover/selected */
+#main-menu .op-menu--item-title,
+.main-menu .op-menu--item-title,
+.main-menu--children-menu-header .op-menu--item-title,
+#main-menu a,
+.main-menu a,
+.main-menu--children-menu-header a {
+  color: var(--ls-text-on-dark) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+}
+
+#main-menu a:hover,
+.main-menu a:hover,
+#main-menu a.selected,
+.main-menu a.selected,
+#main-menu .selected a,
+.main-menu .selected a,
+#main-menu .op-menu--item-action:hover,
+.main-menu .op-menu--item-action:hover {
+  color: var(--ls-action) !important;
+}
+
+/* Selection color */
+::selection {
+  background-color: var(--ls-action);
+  color: var(--ls-action-dark);
+}
+
+/* Header / top navigation — ALWAYS dark brand neutral */
+.op-app-header,
+#top-menu,
+.top-menu {
+  background-color: var(--ls-bg-header) !important;
+  color: var(--ls-text-on-dark) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+.op-app-header a,
+.op-app-header button,
+.op-app-menu--item a,
+.op-app-header--primer-button,
+#top-menu a,
+.top-menu a {
+  color: var(--ls-text-on-dark) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.op-app-header a:hover,
+.op-app-header button:hover,
+.op-app-header--primer-button:hover,
+#top-menu a:hover,
+.top-menu a:hover {
+  color: var(--ls-action) !important;
+}
+
+/* Main menu / left sidebar — ALWAYS dark brand neutral.
+   Override OpenProject's menu CSS variables so its own cascade paints correctly. */
+#main-menu,
+.main-menu,
+.main-menu--container {
+  background-color: var(--ls-bg-sidebar) !important;
+  color: var(--ls-text-on-dark) !important;
+  --main-menu-bg-color: var(--ls-bg-sidebar) !important;
+  --main-menu-font-color: var(--ls-text-on-dark) !important;
+  --main-menu-selected-font-color: var(--ls-text-on-dark) !important;
+  --main-menu-hover-border-color: var(--ls-action) !important;
+  --main-menu-bg-selected-background: var(--ls-primary) !important;
+  --main-menu-bg-selected-border: var(--ls-action) !important;
+}
+
+.main-menu-item a,
+.main-menu--item a,
+.op-menu--item-action,
+.main-menu--children-menu-header,
+.menu_root a,
+.main-menu--children-menu-header a,
+.main-menu--parent-node {
+  color: var(--ls-text-on-dark) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.03em !important;
+  line-height: 1.6 !important;
+  padding-top: 0.55rem !important;
+  padding-bottom: 0.55rem !important;
+  border-radius: 0 var(--ls-radius) 0 var(--ls-radius) !important;
+}
+
+.main-menu-item a:hover,
+.main-menu--item a:hover,
+.op-menu--item-action:hover,
+.main-menu-item a.selected,
+.main-menu--item a.selected,
+.op-menu--item-action.selected,
+.main-menu--parent-node:hover {
+  background-color: var(--ls-bg-menu-hover) !important;
+  color: var(--ls-action) !important;
+}
+
+.main-menu-item.selected a,
+.main-menu--item.-selected a,
+.op-menu--item-action.selected {
+  background-color: var(--ls-primary) !important;
+  color: var(--ls-text-on-dark) !important;
+}
+
+/* Sub-menu / children headers */
+.main-menu--children-menu-header {
+  background-color: var(--ls-neutral-hover) !important;
+  color: var(--ls-text-on-dark) !important;
+}
+
+/* Links — contextual color: yellow on dark surfaces, primary blue on light surfaces */
+a,
+.link,
+.wp-table--cell-span a,
+.op-icon--link,
+.op-primer-link {
+  color: var(--ls-link-color) !important;
+}
+
+a:hover,
+a:focus,
+.link:hover,
+.wp-table--cell-span a:hover,
+.op-primer-link:hover {
+  color: var(--ls-link-hover) !important;
+}
+
+
+/* Primary / highlight buttons */
+.Button--primary,
+.button.-highlight,
+.button.-primary,
+[type="submit"],
+.op-breadcrumb button,
+.add-work-package,
+.op-create-button,
+.Button--emphasis {
+  background-color: var(--ls-primary) !important;
+  color: var(--ls-white) !important;
+  border: none !important;
+  border-radius: 0 var(--ls-radius-l) 0 var(--ls-radius-l) !important;
+  font-family: 'TT Commons Pro', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.Button--primary:hover,
+.button.-highlight:hover,
+.button.-primary:hover,
+[type="submit"]:hover,
+.add-work-package:hover,
+.op-create-button:hover {
+  background-color: var(--ls-primary-hover) !important;
+  transform: translateY(-1px);
+}
+
+/* Default buttons */
+.Button,
+.button,
+.main-menu-toggler,
+.toggler {
+  border-radius: 0 var(--ls-radius) 0 var(--ls-radius) !important;
+  font-weight: 600 !important;
+}
+
+/* Login page — ALWAYS dark brand gradient */
+body.controller-account.action-login,
+body.controller-account.action-login #wrapper,
+body.controller-account.action-login #content-wrapper,
+body.controller-account.action-login #content,
+body.controller-account.action-login .content {
+  background: var(--ls-neutral) !important;
+}
+
+body.controller-account.action-login #login-form,
+body.controller-account.action-login #nav-login-content,
+.form.-bordered,
+.login-form {
+  background: linear-gradient(155deg, #2969ff 0%, #2155ce 39%, #002faa 70%, #00071f 100%) !important;
+  border-radius: 0 var(--ls-radius-l) 0 var(--ls-radius-l) !important;
+  box-shadow: 0 16px 48px rgba(0, 7, 31, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: var(--ls-white) !important;
+}
+
+#login-form label,
+#login-form .FormControl-label,
+#login-form .form--label,
+#nav-login-content label,
+.form.-bordered label {
+  color: var(--ls-white) !important;
+}
+
+#login-form input,
+#nav-login-content input,
+.form.-bordered input {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--ls-white) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  border-radius: 0 var(--ls-radius) 0 var(--ls-radius) !important;
+}
+
+#login-form input:focus,
+#nav-login-content input:focus,
+.form.-bordered input:focus {
+  border-color: var(--ls-action) !important;
+  box-shadow: 0 0 0 2px rgba(231, 244, 82, 0.25) !important;
+  outline: none !important;
+}
+
+/* Widget boxes / cards — follow light/dark mode */
+.widget-box,
+.op-widget-box,
+.work-package--card-view,
+.op-card,
+.content--split,
+.form--section {
+  background-color: var(--ls-bg-card) !important;
+  color: var(--ls-text-page) !important;
+  border: 1px solid var(--ls-border-color) !important;
+  border-radius: 0 var(--ls-radius) 0 var(--ls-radius) !important;
+  box-shadow: 0 4px 12px rgba(0, 7, 31, 0.08);
+}
+
+.widget-box:hover,
+.op-widget-box:hover,
+.work-package--card-view:hover,
+.op-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 7, 31, 0.14);
+}
+
+/* Status labels / chips */
+.status,
+.work-package--status,
+.inline-status,
+.badge,
+.Label {
+  border-radius: 0 var(--ls-radius-s) 0 var(--ls-radius-s) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Tables */
+.wp-table--row,
+.work-package--results-tbody,
+.generic-table--results-table tbody tr {
+  background-color: var(--ls-bg-card) !important;
+  color: var(--ls-text-page) !important;
+}
+
+.wp-table--cell-td {
+  color: var(--ls-text-page) !important;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * WORK-PACKAGE HIERARCHY INDENT GUARDRAIL
+ * ---------------------------------------------------------------------------
+ * Upstream bug (OpenProject <= 17.6.0, NOT fixed in 17.6.0):
+ *   frontend/src/.../wp-fast-table/builders/modes/hierarchy/
+ *   single-hierarchy-row-builder.ts :: appendHierarchyIndicator()
+ *   sets INLINE styles on td.subject and .wp-table--cell-container using
+ *   workPackage.getAncestors().length as the indent level. On incremental
+ *   row refresh (single-row refreshRow after inline-create / reparent
+ *   events) the cached WorkPackageResource.ancestors array accumulates
+ *   stale entries instead of being replaced, so each refresh grows the
+ *   inline minWidth/width and the visible indent keeps increasing until a
+ *   full page reload re-fetches ancestors from the server and resets it.
+ *
+ * This is an UPSTREAM frontend state-management defect, NOT caused by our
+ * theme (this file has no indent/padding-left/margin-left/hierarchy rules
+ * outside this guardrail block). The bundled Angular assets cannot be
+ * patched at runtime, so this CSS caps the symptom with !important.
+ *
+ * Strategy:
+ *   - Real hierarchies up to LS_HIERARCHY_MAX_LEVEL render normally.
+ *   - Buggy accumulation beyond the cap is clamped (visible indent stops
+ *     growing). A page refresh still resets to authoritative values.
+ *   - The cap is generous (10 levels = 25 + 20*10 = 225px indicator width,
+ *     minWidth 325px) so legitimate deep nesting is never affected.
+ *
+ * Re-check on every upgrade:
+ *   Re-inspect appendHierarchyIndicator in the new image commit. If
+ *   upstream fixes the ancestors accumulation (replaces instead of
+ *   appends) this guardrail becomes a harmless no-op and may be removed.
+ *   Until then keep it — it is verified by scripts/feature-check.sh.
+ * ---------------------------------------------------------------------------
+ */
+:root {
+  --ls-hierarchy-max-level: 10;
+  --ls-hierarchy-indent: 20px;
+  --ls-hierarchy-base: 25px;
+  --ls-hierarchy-cap-width: calc(var(--ls-hierarchy-base) + (var(--ls-hierarchy-indent) * var(--ls-hierarchy-max-level)));
+  --ls-hierarchy-cap-min-width: calc(125px + (var(--ls-hierarchy-indent) * var(--ls-hierarchy-max-level)));
+}
+
+/*
+ * Cap the hierarchy indicator span width.
+ * The JS sets inline style.width = (25 + 20*level)px and a matching
+ * data-indentation attribute. Inline width wins over our stylesheet, so we
+ * use max-width !important as the hard ceiling — inline width below the cap
+ * is honored; above the cap max-width clamps it.
+ */
+.wp-table--hierarchy-span {
+  max-width: var(--ls-hierarchy-cap-width) !important;
+  flex: 0 0 auto !important;
+}
+
+/*
+ * Cap the subject cell min-width. JS sets inline style.minWidth =
+ * (125 + 20*level)px. We override with max-width !important so runaway
+ * minWidth cannot push the cell wider than the cap. Legitimate min-width
+ * below the cap still applies (min-width <= max-width is respected).
+ */
+td.subject.-with-hierarchy {
+  max-width: var(--ls-hierarchy-cap-min-width) !important;
+}
+
+/*
+ * Cap the inner cell container width. JS sets inline style.width =
+ * calc(100% - 25px - 20*level*px). Override with min-width !important so
+ * the container never collapses below the cap inverse (i.e. it never
+ * shrinks the content area more than the deepest legitimate hierarchy
+ * would). This bounds the visible indent from the container side too.
+ */
+td.subject.-with-hierarchy .wp-table--cell-container {
+  min-width: calc(100% - var(--ls-hierarchy-cap-width)) !important;
+}
+
+/* Scrollbar (WebKit) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ls-neutral);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ls-primary);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ls-primary-hover);
+}
+
+/* Logo replacement — use locally-mounted Live Solutions brand assets.
+   These paths are served directly by Caddy from /app/public/livesolutions-branding. */
+.op-logo--link[data-auto-theme-switcher-target="desktopLogo"] {
+  display: inline-block;
+  width: 180px;
+  height: 40px;
+  background-image: url('/livesolutions-branding/logo_openproject.png') !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: left center;
+  text-indent: -9999px;
+}
+
+/* High-contrast / dark-mode logo link (the inline template applies this class via JS) */
+.op-logo--link_high_contrast {
+  background-image: url('/livesolutions-branding/logo_openproject_white_big.png') !important;
+}
+
+.op-logo--icon {
+  background-image: url('/livesolutions-branding/icon_logo.png') !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.op-logo--icon_white {
+  background-image: url('/livesolutions-branding/icon_logo_white.png') !important;
+}
+
+/* Hide any remaining OpenProject default text logo */
+.op-logo--text,
+#logo-text {
+  display: none !important;
+}
+
+/* Ensure favicon/logo container sizes */
+.op-logo,
+.op-logo--link,
+.op-logo--icon {
+  max-height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+/* Readability helpers */
+p, li, td, th, .form--field-container, .FormControl-spacingWrapper {
+  line-height: 1.6 !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.25 !important;
+  margin-bottom: 0.75rem !important;
+}

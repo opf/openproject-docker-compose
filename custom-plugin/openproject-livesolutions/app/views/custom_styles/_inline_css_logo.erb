@@ -1,0 +1,34 @@
+<%#--
+  Live Solutions branding override for OpenProject logos.
+  Replaces the default OpenProject wordmark and icon with Live Solutions assets.
+  Assets are served from /livesolutions-branding/ (mounted public path) to bypass
+  the fingerprinted asset pipeline.
+--%>
+
+<style type="text/css">
+  .op-logo--link {
+    background-image: url(/livesolutions-branding/logo_openproject.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 220px;
+  }
+
+  .op-logo--icon {
+    background-image: url(/livesolutions-branding/icon_logo.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  .op-logo--icon_white {
+    background-image: url(/livesolutions-branding/icon_logo_white.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+
+  .op-logo--link_high_contrast {
+    background-image: url(/livesolutions-branding/logo_openproject_white_big.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 220px;
+  }
+</style>
