@@ -77,6 +77,7 @@ services:
       # Override Rails view templates directly (plugin engine does not register view paths)
       - "./custom-plugin/openproject-livesolutions/app/views/custom_styles/_inline_css_logo.erb:/app/app/views/custom_styles/_inline_css_logo.erb:ro"
       - "./custom-plugin/openproject-livesolutions/app/views/common/_favicons.html.erb:/app/app/views/common/_favicons.html.erb:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/homescreen/index.html.erb:/app/app/views/homescreen/index.html.erb:ro"
     # Ensure container restart on failure and autoheal supervision.
     restart: unless-stopped
     healthcheck:

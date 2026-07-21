@@ -6,24 +6,22 @@
 --%>
 
 <style type="text/css">
-  /* Header toolbar: keep the LS cube mark and the logo link layout,
-     but remove the full LS wordmark background from the desktop link. */
+  /* Header toolbar: show LS cube mark, hide the full wordmark. */
   .op-logo--link,
   .op-logo--link_high_contrast {
-    background-image: none !important;
+    width: 55px !important;
+    background-image: url(/livesolutions-branding/icon_logo.png) !important;
+    background-size: contain !important;
+    text-indent: -9999px;
   }
 
-  .op-logo--icon {
-    background-image: url(/livesolutions-branding/icon_logo.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+  .op-logo--icon,
+  .op-logo--icon_white {
+    background-image: url(/livesolutions-branding/icon_logo.png) !important;
+    background-size: contain !important;
   }
 
   .op-logo--icon_white {
-    background-image: url(/livesolutions-branding/icon_logo_white.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+    background-image: url(/livesolutions-branding/icon_logo_white.png) !important;
   }
 </style>
