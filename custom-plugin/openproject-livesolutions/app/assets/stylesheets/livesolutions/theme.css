@@ -469,38 +469,11 @@ td.subject.-with-hierarchy .wp-table--cell-container {
   background: var(--ls-primary-hover);
 }
 
-/* Logo replacement — use locally-mounted Live Solutions brand assets.
-   These paths are served directly by Caddy from /app/public/livesolutions-branding. */
-
-/* Widen the logo container so the full LS wordmark is legible. */
-.op-logo,
+/* Header toolbar: keep the LS cube mark and the logo link layout,
+   but remove the full LS wordmark background from the desktop link. */
 .op-logo--link,
-.op-logo--icon {
-  width: 260px !important;
-  max-width: 260px !important;
-}
-
-/* The icon mark is square-ish; don't stretch it to the wordmark width. */
-.op-logo--icon {
-  width: 48px !important;
-  max-width: 48px !important;
-}
-
-.op-logo--link[data-auto-theme-switcher-target="desktopLogo"],
-.op-logo--link {
-  display: inline-block !important;
-  width: 100% !important;
-  height: 100% !important;
-  background-image: url('/livesolutions-branding/logo_openproject.png') !important;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: left center;
-  text-indent: -9999px;
-}
-
-/* High-contrast / dark-mode logo link (the inline template applies this class via JS) */
 .op-logo--link_high_contrast {
-  background-image: url('/livesolutions-branding/logo_openproject_white_big.png') !important;
+  background-image: none !important;
 }
 
 .op-logo--icon {
@@ -512,22 +485,11 @@ td.subject.-with-hierarchy .wp-table--cell-container {
 
 .op-logo--icon_white {
   background-image: url('/livesolutions-branding/icon_logo_white.png') !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
-/* Hide any remaining OpenProject default text logo */
-.op-logo--text,
-#logo-text {
-  display: none !important;
-}
-
-/* Ensure favicon/logo container sizes */
-.op-logo,
-.op-logo--link,
-.op-logo--icon {
-  max-height: 55px;
-  display: flex;
-  align-items: center;
-}
 
 /* Readability helpers */
 p, li, td, th, .form--field-container, .FormControl-spacingWrapper {

@@ -6,28 +6,11 @@
 --%>
 
 <style type="text/css">
-  /* Widen the logo containers so the full LS wordmark fits. */
-  .op-logo,
+  /* Header toolbar: keep the LS cube mark and the logo link layout,
+     but remove the full LS wordmark background from the desktop link. */
   .op-logo--link,
-  .op-logo--icon {
-    width: 260px !important;
-    max-width: 260px !important;
-  }
-
-  .op-logo--icon {
-    /* The icon mark is square-ish; keep it from stretching too wide. */
-    width: 48px !important;
-    max-width: 48px !important;
-  }
-
-  .op-logo--link {
-    background-image: url(/livesolutions-branding/logo_openproject.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: left center;
-    display: inline-block !important;
-    width: 100% !important;
-    height: 100% !important;
+  .op-logo--link_high_contrast {
+    background-image: none !important;
   }
 
   .op-logo--icon {
@@ -42,15 +25,5 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-  }
-
-  .op-logo--link_high_contrast {
-    background-image: url(/livesolutions-branding/logo_openproject_white_big.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: left center;
-    display: inline-block !important;
-    width: 100% !important;
-    height: 100% !important;
   }
 </style>
