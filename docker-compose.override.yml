@@ -12,6 +12,17 @@ services:
         limits:
           cpus: "1.00"
           memory: 2G
+    # Memory tuning for the 2 GiB container limit.
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=512MB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "effective_cache_size=1GB"
+      - "-c"
+      - "maintenance_work_mem=256MB"
     volumes:
       - "openproject_pgdata:/var/lib/postgresql/data"
 
