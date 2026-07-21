@@ -11,7 +11,7 @@ services:
       resources:
         limits:
           cpus: "1.00"
-          memory: 1G
+          memory: 2G
     volumes:
       - "openproject_pgdata:/var/lib/postgresql/data"
 
@@ -49,7 +49,7 @@ services:
       resources:
         limits:
           cpus: "2.00"
-          memory: 2G
+          memory: 4G
     volumes:
       - "${OPDATA:-opdata}:/var/openproject/assets"
       - "./custom-plugin/openproject-livesolutions:/usr/src/app/plugins/openproject-livesolutions:ro"
@@ -72,7 +72,7 @@ services:
       resources:
         limits:
           cpus: "1.00"
-          memory: 1G
+          memory: 2G
     volumes:
       - "${OPDATA:-opdata}:/var/openproject/assets"
       - "./custom-plugin/openproject-livesolutions:/usr/src/app/plugins/openproject-livesolutions:ro"
