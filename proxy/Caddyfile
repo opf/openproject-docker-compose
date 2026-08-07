@@ -15,6 +15,17 @@
         file_server
     }
 
+    # Serve Live Solutions runtime JS patches directly. The plugin engine
+    # mounts each patch into /app/public/javascripts/livesolutions/ via
+    # docker-compose.override.yml (see Request #777 hierarchy-collapse-all.js
+    # and Request #778 pagination-default.js). Without this route the JS
+    # requests fall through to the Rails reverse proxy and the browser
+    # receives the OP HTML instead of the script.
+    handle_path /javascripts/livesolutions/* {
+        root * /app/public/javascripts/livesolutions
+        file_server
+    }
+
     # Serve root favicon directly from the branding set.
     handle /favicon.ico {
         root * /app/public/livesolutions-branding

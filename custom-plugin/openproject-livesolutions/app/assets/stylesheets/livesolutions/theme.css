@@ -498,3 +498,60 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.25 !important;
   margin-bottom: 0.75rem !important;
 }
+
+/*
+ * ---------------------------------------------------------------------------
+ * HIERARCHY "COLLAPSE ALL" / "EXPAND ALL" TOOLBAR BUTTONS
+ * ---------------------------------------------------------------------------
+ * Styles for the runtime JS patch injected by
+ * app/views/common/_favicons.html.erb (see
+ * hierarchy-collapse-all.js). Keeps the buttons consistent with the LS
+ * toolbar look (radius signature, brand neutral background, action
+ * accent on hover) and minimal so they never compete visually with the
+ * surrounding hierarchy / grouping controls.
+ *
+ * Scope kept narrow — only elements created by the patch bear the
+ * `.ls-hca-*` class names, so there is zero risk of styling drift on
+ * upstream elements.
+ * ---------------------------------------------------------------------------
+ */
+.ls-hca-buttons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-inline-start: 0.5rem;
+  white-space: nowrap;
+}
+
+.ls-hca-buttons .ls-hca-button {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--ls-bg-card, #ffffff);
+  color: var(--ls-text-page, #1a1f36);
+  border: 1px solid var(--ls-border-color, rgba(0, 7, 31, 0.2));
+  border-radius: 0 var(--ls-radius-s, 0.375rem) 0 var(--ls-radius-s, 0.375rem);
+  font-family: 'TT Commons Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.02em;
+  padding: 0.3125rem 0.625rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.ls-hca-buttons .ls-hca-button:hover,
+.ls-hca-buttons .ls-hca-button:focus {
+  background-color: var(--ls-action, #e7f452);
+  color: var(--ls-action-dark, #6f7808);
+  border-color: var(--ls-action-dark, #6f7808);
+  outline: none;
+}
+
+.ls-hca-buttons .ls-hca-button:active {
+  transform: translateY(1px);
+}
+
+.ls-hca-buttons .ls-hca-button:focus-visible {
+  box-shadow: 0 0 0 2px rgba(51, 102, 255, 0.35);
+}

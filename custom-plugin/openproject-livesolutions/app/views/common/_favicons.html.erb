@@ -7,3 +7,26 @@
                      rel: "apple-touch-icon",
                      type: "image/png",
                      sizes: "120x120" %>
+
+<%#--
+  Request #778 — pagination baseline default.
+  This partial is rendered inside the application <head> by
+  layouts/base.html.erb, so we use it as a hook for the
+  livesolutions pagination-default.js script tag instead of
+  overriding the full layout (which would drift from upstream).
+  The script itself is mounted at runtime via
+  docker-compose.override.yml -> /app/public/javascripts/livesolutions/.
+--%>
+<script src="/javascripts/livesolutions/pagination-default.js" defer></script>
+
+<%#--
+  Request #777 — work-package hierarchy "Collapse all" / "Expand all".
+  Same loading pattern as Request #778 above (live-mounted JS, no image
+  rebuild). The script is idempotent and self-observes the DOM so it
+  works whether Angular has finished bootstrapping or not.
+
+  CSP note: script-src 'self' (plus js.chargebee.com) per
+  config/initializers/content_security_policy.rb covers same-origin
+  /javascripts/* URLs without a nonce, mirroring pagination-default.
+--%>
+<script src="/javascripts/livesolutions/hierarchy-collapse-all.js" defer></script>
