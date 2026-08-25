@@ -16,6 +16,13 @@
   overriding the full layout (which would drift from upstream).
   The script itself is mounted at runtime via
   docker-compose.override.yml -> /app/public/javascripts/livesolutions/.
+
+  Implementation note (2026-08-25):
+    The backend default page size is now also enforced to 100 by
+    lib/open_project/livesolutions/patches/query_params_representer_patch.rb,
+    so the API returns pageSize=100 for fresh requests even before the
+    browser script has run. The JS remains as a guard for cached
+    localStorage values.
 --%>
 <script src="/javascripts/livesolutions/pagination-default.js" defer></script>
 
@@ -24,6 +31,14 @@
   Same loading pattern as Request #778 above (live-mounted JS, no image
   rebuild). The script is idempotent and self-observes the DOM so it
   works whether Angular has finished bootstrapping or not.
+
+  Persistence note (2026-08-25):
+    The collapse/expand state is now persisted in the backend, not in
+    localStorage. The JS calls /api/v3/livesolutions_hierarchy_state to
+    read the user's saved state on page load and write it after bulk or
+    individual toggles. Existing and future users receive a default row
+    (all_collapsed=true) from the migration and User model patch, making
+    the feature always-on and permanent across browsers/devices.
 
   CSP note: script-src 'self' (plus js.chargebee.com) per
   config/initializers/content_security_policy.rb covers same-origin

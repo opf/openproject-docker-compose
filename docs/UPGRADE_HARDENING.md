@@ -14,9 +14,10 @@ It is stored in `docs/` (not in the upstream `README.md`) so it survives
 | PostgreSQL data | Named volume `openproject_openproject_pgdata` | Offline physical tarball + live logical `pg_dumpall` |
 | OpenProject attachments/assets | Bind mount `/var/openproject/assets` | Offline tarball in `backups/` |
 | Brand CSS / custom theme | `custom-plugin/openproject-livesolutions/.../theme.css` mounted to `/app/public/stylesheets/livesolutions-theme.css` | Health check verifies it is served after every restart |
-| Custom plugin | `custom-plugin/openproject-livesolutions/` mounted to `/usr/src/app/plugins/openproject-livesolutions` | Verified present by health check; version compatibility still needs manual review on major upgrades |
+| Custom plugin | `custom-plugin/openproject-livesolutions/` copied into image by `Dockerfile` | Verified present by health check; version compatibility still needs manual review on major upgrades |
 | Cloudflare Access SSO | `openproject-config/initializers/cloudflare_access_auth.rb` mounted to `/app/config/initializers/custom/` | Verified present by health check |
-| Cloudflare Access SSO | `openproject-config/initializers/cloudflare_access_auth.rb` mounted to `/app/config/initializers/custom/` | Verified present by health check |
+| Hierarchy collapse state (#777) | `db/migrate/20260825210000_create_user_hierarchy_collapse_states.rb` + backend API | Migration must be run after image rebuild; state persists per user across browsers |
+| Pagination default 100 (#778) | `lib/open_project/livesolutions/patches/query_params_representer_patch.rb` | Enforced at API level for all users and queries |
 | Premium feature unlock | `openproject-config/initializers/community_unlock.rb` mounted to `/app/config/initializers/custom/` | 22 enterprise features unlocked; verified present by feature check |
 | Proxy / Caddyfile | `proxy/Caddyfile` bind-mounted | Preserved during `git pull` by upgrade wrapper |
 | Secrets | `.env` (gitignored) | Never committed; restored automatically after `git pull` |
@@ -115,6 +116,10 @@ It verifies:
 - The Live Solutions brand CSS is reachable.
 - The custom plugin directory is mounted.
 - The Cloudflare Access initializer is present.
+- The hierarchy-collapse backend migration has been applied
+  (`user_hierarchy_collapse_states` table exists).
+- The pagination-default patch is active (an API query returns `pageSize=100`
+  when no explicit page size is requested).
 - The public login page is reachable via Cloudflare Tunnel.
 - The asset directory is accessible.
 

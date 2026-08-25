@@ -90,10 +90,15 @@ services:
       # application <head> via the existing plugin view override at
       # app/views/common/_favicons.html.erb.
       - "./custom-plugin/openproject-livesolutions/app/assets/javascripts/livesolutions/hierarchy-collapse-all.js:/app/public/javascripts/livesolutions/hierarchy-collapse-all.js:ro"
-      # View overrides (logo sizing, favicon, homescreen)
+      # View overrides (logo sizing, favicon, homescreen, bulk-copy error safe-linking)
       - "./custom-plugin/openproject-livesolutions/app/views/custom_styles/_inline_css_logo.erb:/app/app/views/custom_styles/_inline_css_logo.erb:ro"
       - "./custom-plugin/openproject-livesolutions/app/views/common/_favicons.html.erb:/app/app/views/common/_favicons.html.erb:ro"
       - "./custom-plugin/openproject-livesolutions/app/views/homescreen/index.html.erb:/app/app/views/homescreen/index.html.erb:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/work_packages/bulk/_errors.html.erb:/app/app/views/work_packages/bulk/_errors.html.erb:ro"
+      # Work-package list bootstrap: inject per-user hierarchy collapse state into
+      # the page <head> as a meta tag so the runtime JS can restore it before
+      # Angular renders the table rows (request #777 optimization).
+      - "./custom-plugin/openproject-livesolutions/app/views/work_packages/index.html.erb:/app/app/views/work_packages/index.html.erb:ro"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080${OPENPROJECT_RAILS__RELATIVE__URL_ROOT:-}/health_checks/default"]
@@ -123,6 +128,7 @@ services:
       - "./openproject-config/branding/generated/logo_openproject_white_big.png:/app/app/assets/images/logo_openproject_white_big.png:ro"
       - "./custom-plugin/openproject-livesolutions/app/views/custom_styles/_inline_css_logo.erb:/app/app/views/custom_styles/_inline_css_logo.erb:ro"
       - "./custom-plugin/openproject-livesolutions/app/views/common/_favicons.html.erb:/app/app/views/common/_favicons.html.erb:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/work_packages/bulk/_errors.html.erb:/app/app/views/work_packages/bulk/_errors.html.erb:ro"
 
   cron:
     build:

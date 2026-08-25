@@ -95,7 +95,7 @@ done
 # 5. Custom plugin path mounted
 # ---------------------------------------------------------------------------
 log "Checking custom plugin mount..."
-if docker compose exec -T web test -d /usr/src/app/plugins/openproject-livesolutions; then
+if docker compose exec -T web test -d /app/plugins/openproject-livesolutions; then
   log "OK: openproject-livesolutions plugin directory mounted"
 else
   fail "openproject-livesolutions plugin directory missing"
@@ -131,6 +131,30 @@ else
   warn "Public URL ${PUBLIC_URL}/login not reachable (may be expected from this host)"
 fi
 
+# ---------------------------------------------------------------------------
+# 7a. Hierarchy collapse state migration applied
+# ---------------------------------------------------------------------------
+log "Checking hierarchy collapse state migration..."
+if docker compose exec -T web /app/bin/rails runner "exit(UserHierarchyCollapseState.table_exists? ? 0 : 1)" > /dev/null 2>&1; then
+  log "OK: user_hierarchy_collapse_states table exists"
+else
+  fail "user_hierarchy_collapse_states table missing (migration not applied)"
+fi
+
+# ---------------------------------------------------------------------------
+# 7b. Pagination default patch active (API default pageSize is 100)
+# ---------------------------------------------------------------------------
+log "Checking pagination default patch..."
+if docker compose exec -T web /app/bin/rails runner "
+  q = Query.new_default
+  h = API::V3::Queries::QueryParamsRepresenter.new(q).to_h
+  exit(h[:pageSize] == 100 ? 0 : 1)
+" > /dev/null 2>&1; then
+  log "OK: API default pageSize is 100"
+else
+  fail "API default pageSize is not 100 (pagination patch not active)"
+fi
+
 
 
 # ---------------------------------------------------------------------------
@@ -145,7 +169,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 7b. Global status endpoint (status.livesolutionsnow.com/healthz)
+# 7c. Global status endpoint (status.livesolutionsnow.com/healthz)
 # ---------------------------------------------------------------------------
 log "Checking global status endpoint..."
 if curl -fsS -L --max-time 30 "https://status.livesolutionsnow.com/healthz" 2>/dev/null | grep -q "OK"; then
