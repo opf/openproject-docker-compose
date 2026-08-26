@@ -27,6 +27,14 @@ module OpenProject::Livesolutions
         Accounts::CurrentUser.prepend OpenProject::Livesolutions::Patches::CurrentUserCloudflarePatch
       end
 
+      unless WorkPackages::Shared::AllDays.ancestors.include?(OpenProject::Livesolutions::Patches::AllDaysLagPatch)
+        WorkPackages::Shared::AllDays.prepend OpenProject::Livesolutions::Patches::AllDaysLagPatch
+      end
+
+      unless Relation.ancestors.include?(OpenProject::Livesolutions::Patches::RelationLagPatch)
+        Relation.prepend OpenProject::Livesolutions::Patches::RelationLagPatch
+      end
+
       unless API::Decorators::QueryParamsRepresenter.ancestors.include?(OpenProject::Livesolutions::Patches::QueryParamsRepresenterPatch)
         API::Decorators::QueryParamsRepresenter.prepend OpenProject::Livesolutions::Patches::QueryParamsRepresenterPatch
       end
