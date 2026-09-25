@@ -1,0 +1,27 @@
+<%#--
+  Live Solutions branding override for OpenProject logos.
+  Replaces the default OpenProject wordmark and icon with Live Solutions assets.
+  Assets are served from /livesolutions-branding/ (mounted public path) to bypass
+  the fingerprinted asset pipeline.
+--%>
+
+<style type="text/css">
+  /* Header toolbar: show LS cube mark, hide the full wordmark. */
+  .op-logo--link,
+  .op-logo--link_high_contrast {
+    width: 55px !important;
+    background-image: url(/livesolutions-branding/icon_logo.png) !important;
+    background-size: contain !important;
+    text-indent: -9999px;
+  }
+
+  .op-logo--icon,
+  .op-logo--icon_white {
+    background-image: url(/livesolutions-branding/icon_logo.png) !important;
+    background-size: contain !important;
+  }
+
+  .op-logo--icon_white {
+    background-image: url(/livesolutions-branding/icon_logo_white.png) !important;
+  }
+</style>

@@ -1,0 +1,21 @@
+<%#--
+  Live Solutions homescreen override.
+  Replaces the organization-name text header with the LS logo.
+--%>
+
+<%=
+  render(Primer::OpenProject::PageHeader.new) do |header|
+    header.with_title do
+      content_tag(:img, "", src: "/livesolutions-branding/logo_openproject.png", alt: organization_name, style: "height: 60px; width: auto;")
+    end
+    header.with_breadcrumbs(nil)
+  end
+%>
+
+<%= render Homescreen::AnnouncementComponent.new(announcement: @announcement) %>
+
+<%= render Homescreen::BlocksGridComponent.new(homescreen: @homescreen) %>
+
+<%= render Homescreen::LinksComponent.new(homescreen: @homescreen) %>
+
+<%= call_hook :homescreen_after_links %>
