@@ -127,7 +127,7 @@ services:
       - backend
 
   hocuspocus:
-    image: openproject/hocuspocus:17.9.0
+    image: openproject/hocuspocus:17.9.1
     environment:
       SECRET: ${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}
       OPENPROJECT_URL: "${OPENPROJECT_URL:-http://web:8080}"
