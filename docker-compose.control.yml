@@ -30,6 +30,20 @@ services:
       - "./backups:/backups"
       - "./control:/control"
     entrypoint: ["/control/backup/entrypoint.sh"]
+  restore:
+    restart: "no"
+    build:
+      context: ./control
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      OPDATA: /var/openproject/assets
+      RESTORE_TIMESTAMP: ${RESTORE_TIMESTAMP:-}
+    volumes:
+      - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
+      - "${OPDATA:-opdata}:/var/openproject/assets"
+      - "./backups:/backups"
+      - "./control:/control"
+    entrypoint: ["/control/restore/entrypoint.sh"]
   web:
     restart: "no"
     entrypoint: ["echo", "disabled"]

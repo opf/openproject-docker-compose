@@ -1,0 +1,219 @@
+# OpenProject 17 Community Edition — Live Solutions WSL2 override
+# Purpose: attach to existing ai-stack_ai-net for Cloudflare Tunnel, remove host port publishing,
+#          apply resource limits, mount brand assets + initializers, and build custom image with plugins.
+# This file is merged with upstream docker-compose.yml and survives `git pull` updates.
+
+services:
+  db:
+    # Dedicated postgres instance for OpenProject (segregated from ai-postgres)
+    image: postgres:17
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 2G
+    # Memory tuning for the 2 GiB container limit.
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=512MB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "effective_cache_size=1GB"
+      - "-c"
+      - "maintenance_work_mem=256MB"
+    volumes:
+      - "openproject_pgdata:/var/lib/postgresql/data"
+
+  cache:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+
+  proxy:
+    # No host port publish — Cloudflare Tunnel reaches this on ai-stack_ai-net via container name.
+    ports: !reset []
+    networks:
+      - frontend
+      - ai-stack_ai-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 128M
+    volumes:
+      - "./proxy/Caddyfile:/etc/caddy/Caddyfile:ro"
+      - "./openproject-config/branding/generated:/app/public/livesolutions-branding:ro"
+      # Live Solutions runtime JS patches (requests #777, #778) — proxied
+      # by Caddy via the /javascripts/livesolutions/* route added to
+      # proxy/Caddyfile. Mounted read-only into the proxy container so
+      # Caddy can file_server them directly.
+      - "./custom-plugin/openproject-livesolutions/app/assets/javascripts/livesolutions:/app/public/javascripts/livesolutions:ro"
+    healthcheck:
+      test: ["CMD", "caddy", "version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: projects.livesolutionsnow.com
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 4G
+    volumes:
+      - "${OPDATA:-opdata}:/var/openproject/assets"
+      # Initializers (Cloudflare auth, PDF logo sizing, email suppression, etc.)
+      - "./openproject-config/initializers:/app/config/initializers/custom:ro"
+      # Live Solutions branding assets (served by Caddy and mounted into Rails public)
+      - "./openproject-config/branding/generated:/app/public/livesolutions-branding:ro"
+      - "./openproject-config/branding/generated/favicon.ico:/app/public/favicon.ico:ro"
+      # Replace default OpenProject logo assets so exports use LS branding
+      - "./openproject-config/branding/generated/logo_openproject.png:/app/app/assets/images/logo_openproject.png:ro"
+      - "./openproject-config/branding/generated/logo_openproject_white_big.png:/app/app/assets/images/logo_openproject_white_big.png:ro"
+      # Theme CSS (hot-swappable without rebuild)
+      - "./custom-plugin/openproject-livesolutions/app/assets/stylesheets/livesolutions/theme.css:/app/public/stylesheets/livesolutions-theme.css:ro"
+      # Pagination default JS (request #778) — hot-swappable without rebuild,
+      # served directly from /app/public/javascripts/livesolutions/
+      - "./custom-plugin/openproject-livesolutions/app/assets/javascripts/livesolutions/pagination-default.js:/app/public/javascripts/livesolutions/pagination-default.js:ro"
+      # Hierarchy Collapse-all / Expand-all JS (request #777) — same mount
+      # pattern as the pagination script above. Injected into the
+      # application <head> via the existing plugin view override at
+      # app/views/common/_favicons.html.erb.
+      - "./custom-plugin/openproject-livesolutions/app/assets/javascripts/livesolutions/hierarchy-collapse-all.js:/app/public/javascripts/livesolutions/hierarchy-collapse-all.js:ro"
+      # View overrides (logo sizing, favicon, homescreen, bulk-copy error safe-linking)
+      - "./custom-plugin/openproject-livesolutions/app/views/custom_styles/_inline_css_logo.erb:/app/app/views/custom_styles/_inline_css_logo.erb:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/common/_favicons.html.erb:/app/app/views/common/_favicons.html.erb:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/homescreen/index.html.erb:/app/app/views/homescreen/index.html.erb:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/work_packages/bulk/_errors.html.erb:/app/app/views/work_packages/bulk/_errors.html.erb:ro"
+      # Work-package list bootstrap: inject per-user hierarchy collapse state into
+      # the page <head> as a meta tag so the runtime JS can restore it before
+      # Angular renders the table rows (request #777 optimization).
+      - "./custom-plugin/openproject-livesolutions/app/views/work_packages/index.html.erb:/app/app/views/work_packages/index.html.erb:ro"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080${OPENPROJECT_RAILS__RELATIVE__URL_ROOT:-}/health_checks/default"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    labels:
+      - autoheal=true
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 2G
+    volumes:
+      - "${OPDATA:-opdata}:/var/openproject/assets"
+      - "./openproject-config/initializers:/app/config/initializers/custom:ro"
+      - "./openproject-config/branding/generated:/app/public/livesolutions-branding:ro"
+      - "./openproject-config/branding/generated/favicon.ico:/app/public/favicon.ico:ro"
+      - "./openproject-config/branding/generated/logo_openproject.png:/app/app/assets/images/logo_openproject.png:ro"
+      - "./openproject-config/branding/generated/logo_openproject_white_big.png:/app/app/assets/images/logo_openproject_white_big.png:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/custom_styles/_inline_css_logo.erb:/app/app/views/custom_styles/_inline_css_logo.erb:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/common/_favicons.html.erb:/app/app/views/common/_favicons.html.erb:ro"
+      - "./custom-plugin/openproject-livesolutions/app/views/work_packages/bulk/_errors.html.erb:/app/app/views/work_packages/bulk/_errors.html.erb:ro"
+
+  cron:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+    volumes:
+      - "${OPDATA:-opdata}:/var/openproject/assets"
+      - "./openproject-config/initializers:/app/config/initializers/custom:ro"
+      - "./openproject-config/branding/generated:/app/public/livesolutions-branding:ro"
+      - "./openproject-config/branding/generated/favicon.ico:/app/public/favicon.ico:ro"
+      - "./openproject-config/branding/generated/logo_openproject.png:/app/app/assets/images/logo_openproject.png:ro"
+      - "./openproject-config/branding/generated/logo_openproject_white_big.png:/app/app/assets/images/logo_openproject_white_big.png:ro"
+
+  seeder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1G
+
+  autoheal:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+    # Restart the autoheal supervisor if it exits.
+    restart: unless-stopped
+
+  hocuspocus:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('net').createConnection(1234,'localhost').on('connect',function(){this.end()}).on('error',function(){process.exit(1)})"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  relay:
+    build:
+      context: ./smtp-relay
+      dockerfile: Dockerfile
+    image: openproject-smtp-relay:local
+    restart: unless-stopped
+    environment:
+      RELAY_LISTEN_HOST: 0.0.0.0
+      RELAY_LISTEN_PORT: 587
+      GRAPH_TENANT_ID: ${GRAPH_TENANT_ID}
+      GRAPH_CLIENT_ID: ${GRAPH_CLIENT_ID}
+      GRAPH_CLIENT_SECRET: ${GRAPH_CLIENT_SECRET}
+      DEFAULT_SENDER_UPN: ${DEFAULT_SENDER_UPN:-general@livesolutionsnow.com}
+      ALLOWED_SENDERS: ${ALLOWED_SENDERS:-general@livesolutionsnow.com,anthony@livesolutionsnow.com}
+    networks:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket; s=socket.socket(); s.connect(('127.0.0.1',587)); s.close()"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+networks:
+  ai-stack_ai-net:
+    external: true
+    name: ai-stack_ai-net
+
+volumes:
+  openproject_pgdata:
