@@ -1,6 +1,13 @@
 :80 {
     reverse_proxy /hocuspocus* hocuspocus:1234
 
+    # Live updates over WebSocket (/cable) and its server-sent events fallback (/events)
+    @anycable path /cable /events
+    reverse_proxy @anycable anycable:2345
+
+    # Only the anycable service may call OpenProject's live updates endpoint, which it does on web directly
+    respond /_anycable* 404
+
     reverse_proxy * http://${APP_HOST}:8080 {
         # The following directives are needed to make the proxy forward explicitly the X-Forwarded-* headers. If unset,
         # Caddy will reset them. See: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#defaults

@@ -71,6 +71,21 @@ When running it in *localhost* it's necessary to make a few adjustments:
 2. Define the `OPENPROJECT_HOST__NAME`, and the `COLLABORATIVE_SERVER_URL` in your .env file (you can look at .env.example for reference)
 3. Restart the containers
 
+### Live updates
+
+From OpenProject 18 on, some pages, such as the meeting agenda, are updated in real time through the
+[AnyCable](https://docs.anycable.io) server in the `anycable` service. Without it, these pages keep checking for changes periodically.
+
+The service is disabled by default. To enable it, set the following in your .env file (see .env.example) and restart the
+containers, rebuilding the proxy (`docker compose up -d --build`):
+
+```shell
+COMPOSE_PROFILES=live-updates
+ANYCABLE_SECRET=<a pseudo-random secret, e.g. from `openssl rand -hex 32`>
+```
+
+Live updates stay disabled in OpenProject as long as `ANYCABLE_SECRET` is empty.
+
 ### HTTPS/SSL
 
 By default OpenProject starts with the HTTPS option **enabled**, but it **does not** handle SSL termination itself. This

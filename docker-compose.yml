@@ -22,6 +22,11 @@ x-op-app: &app
     OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
     OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__URL: "${COLLABORATIVE_SERVER_URL:-wss://${OPENPROJECT_HOST__NAME}/hocuspocus}"
     OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__SECRET: "${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}"
+    # Live updates through the anycable service (OpenProject 18+), disabled until ANYCABLE_SECRET is set. See README.
+    ANYCABLE_SECRET: "${ANYCABLE_SECRET:-}"
+    ANYCABLE_WEBSOCKET_URL: "${ANYCABLE_WEBSOCKET_URL:-/cable}"
+    ANYCABLE_HTTP_RPC: "true"
+    ANYCABLE_HTTP_BROADCAST_URL: "${ANYCABLE_HTTP_BROADCAST_URL:-http://anycable:2345/_broadcast}"
     DATABASE_URL: "${DATABASE_URL:-postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true}"
     RAILS_MIN_THREADS: ${RAILS_MIN_THREADS:-4}
     RAILS_MAX_THREADS: ${RAILS_MAX_THREADS:-16}
@@ -132,6 +137,24 @@ services:
       SECRET: ${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}
       OPENPROJECT_URL: "${OPENPROJECT_URL:-http://web:8080}"
       OPENPROJECT_HTTPS: "${OPENPROJECT_HTTPS:-true}"
+    networks:
+      - backend
+      - frontend
+    <<: *restart_policy
+
+  anycable:
+    # 1.6.16 to 1.6.18 close only one connection per remote disconnect (anycable/anycable a0d532fa)
+    image: anycable/anycable-go:1.6.15
+    # Only started with COMPOSE_PROFILES=live-updates
+    profiles: ["live-updates"]
+    environment:
+      ANYCABLE_HOST: "0.0.0.0"
+      ANYCABLE_PORT: "2345"
+      ANYCABLE_SECRET: "${ANYCABLE_SECRET:-}"
+      # Connections and subscriptions are authorized by OpenProject through this endpoint
+      ANYCABLE_RPC_HOST: "${ANYCABLE_RPC_HOST:-http://web:8080${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/_anycable}"
+      ANYCABLE_BROADCAST_ADAPTER: "http"
+      ANYCABLE_SSE: "true"
     networks:
       - backend
       - frontend
