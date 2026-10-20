@@ -10,6 +10,8 @@ x-op-restart-policy: &restart_policy
   restart: unless-stopped
 x-op-image: &image
   image: openproject/openproject:${TAG:-17-slim}
+# Shared by OpenProject and the anycable service
+x-anycable-secret: &anycable_secret "${ANYCABLE_SECRET:-OVERRIDE_ME_PLEASE}"
 x-op-app: &app
   <<: [*image, *restart_policy]
   environment:
@@ -22,9 +24,10 @@ x-op-app: &app
     OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
     OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__URL: "${COLLABORATIVE_SERVER_URL:-wss://${OPENPROJECT_HOST__NAME}/hocuspocus}"
     OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__SECRET: "${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}"
-    # Live updates through the anycable service (OpenProject 18+), disabled until ANYCABLE_SECRET is set. See README.
-    ANYCABLE_SECRET: "${ANYCABLE_SECRET:-}"
-    ANYCABLE_WEBSOCKET_URL: "${ANYCABLE_WEBSOCKET_URL:-/cable}"
+    # Live updates through the anycable service (OpenProject 18+). See README.
+    ANYCABLE_SECRET: *anycable_secret
+    # Only override with the absolute URL of an external AnyCable server, as the proxy and anycable serve /cable
+    ANYCABLE_WEBSOCKET_URL: "${ANYCABLE_WEBSOCKET_URL:-${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/cable}"
     ANYCABLE_HTTP_RPC: "true"
     ANYCABLE_HTTP_BROADCAST_URL: "${ANYCABLE_HTTP_BROADCAST_URL:-http://anycable:2345/_broadcast}"
     DATABASE_URL: "${DATABASE_URL:-postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true}"
@@ -68,6 +71,9 @@ services:
         APP_HOST: web
     image: openproject/proxy
     <<: *restart_policy
+    environment:
+      # Routes the live updates paths below OpenProject's relative URL root to anycable
+      OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
     ports:
       - "${PORT:-8080}:80"
     depends_on:
@@ -145,16 +151,21 @@ services:
   anycable:
     # 1.6.16 to 1.6.18 close only one connection per remote disconnect (anycable/anycable a0d532fa)
     image: anycable/anycable-go:1.6.15
-    # Only started with COMPOSE_PROFILES=live-updates
-    profiles: ["live-updates"]
     environment:
       ANYCABLE_HOST: "0.0.0.0"
       ANYCABLE_PORT: "2345"
-      ANYCABLE_SECRET: "${ANYCABLE_SECRET:-}"
+      ANYCABLE_SECRET: *anycable_secret
+      # Served on the same paths the proxy routes, as it does not rewrite them
+      ANYCABLE_PATH: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/cable"
+      ANYCABLE_SSE_PATH: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/events"
       # Connections and subscriptions are authorized by OpenProject through this endpoint
       ANYCABLE_RPC_HOST: "${ANYCABLE_RPC_HOST:-http://web:8080${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/_anycable}"
       ANYCABLE_BROADCAST_ADAPTER: "http"
       ANYCABLE_SSE: "true"
+    # Failed calls to a booting web open anycable's circuit breaker, rejecting connections for a while
+    depends_on:
+      web:
+        condition: service_healthy
     networks:
       - backend
       - frontend

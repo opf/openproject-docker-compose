@@ -74,17 +74,14 @@ When running it in *localhost* it's necessary to make a few adjustments:
 ### Live updates
 
 From OpenProject 18 on, some pages, such as the meeting agenda, are updated in real time through the
-[AnyCable](https://docs.anycable.io) server in the `anycable` service. Without it, these pages keep checking for changes periodically.
+[AnyCable](https://docs.anycable.io) server in the `anycable` service, which is enabled by default. Without it, these pages keep checking for changes periodically.
 
-The service is disabled by default. To enable it, set the following in your .env file (see .env.example) and restart the
-containers, rebuilding the proxy (`docker compose up -d --build`):
+> Important! Make sure to override the default secret by setting the `ANYCABLE_SECRET` variable, e.g. to the output of `openssl rand -hex 32`.
 
-```shell
-COMPOSE_PROFILES=live-updates
-ANYCABLE_SECRET=<a pseudo-random secret, e.g. from `openssl rand -hex 32`>
-```
-
-Live updates stay disabled in OpenProject as long as `ANYCABLE_SECRET` is empty.
+Browsers connect to it through the proxy, over WebSocket on `/cable`, falling back to server-sent events on `/events`.
+If a reverse proxy in front of the stack does not pass WebSockets through, pages still update, but over `/events`.
+The `/_anycable` endpoint, which the `anycable` service calls on `web` directly, is blocked on the proxy and should
+not be reachable from the internet.
 
 ### HTTPS/SSL
 
