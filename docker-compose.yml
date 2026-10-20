@@ -26,8 +26,8 @@ x-op-app: &app
     OPENPROJECT_COLLABORATIVE__EDITING__HOCUSPOCUS__SECRET: "${COLLABORATIVE_SERVER_SECRET:-OVERRIDE_ME_PLEASE}"
     # Live updates through the anycable service (OpenProject 18+). See README.
     ANYCABLE_SECRET: *anycable_secret
-    # Only override with the absolute URL of an external AnyCable server, as the proxy and anycable serve /cable
-    ANYCABLE_WEBSOCKET_URL: "${ANYCABLE_WEBSOCKET_URL:-${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/cable}"
+    # The path the proxy routes to the anycable service, next to /events which OpenProject falls back to
+    ANYCABLE_WEBSOCKET_URL: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}/cable"
     ANYCABLE_HTTP_RPC: "true"
     ANYCABLE_HTTP_BROADCAST_URL: "${ANYCABLE_HTTP_BROADCAST_URL:-http://anycable:2345/_broadcast}"
     DATABASE_URL: "${DATABASE_URL:-postgres://postgres:p4ssw0rd@db/openproject?pool=20&encoding=unicode&reconnect=true}"
