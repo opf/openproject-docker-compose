@@ -47,6 +47,12 @@ services:
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-p4ssw0rd}
       POSTGRES_DB: openproject
+    healthcheck:
+      # use TCP (-h): during first-time initialisation postgres only listens on a socket
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d openproject"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
     networks:
       - backend
 
@@ -78,9 +84,12 @@ services:
       - frontend
       - backend
     depends_on:
-      - db
-      - cache
-      - seeder
+      db:
+        condition: service_started
+      cache:
+        condition: service_started
+      seeder:
+        condition: service_completed_successfully
     labels:
       - autoheal=true
     healthcheck:
@@ -105,9 +114,12 @@ services:
     networks:
       - backend
     depends_on:
-      - db
-      - cache
-      - seeder
+      db:
+        condition: service_started
+      cache:
+        condition: service_started
+      seeder:
+        condition: service_completed_successfully
 
   cron:
     <<: *app
@@ -115,9 +127,12 @@ services:
     networks:
       - backend
     depends_on:
-      - db
-      - cache
-      - seeder
+      db:
+        condition: service_started
+      cache:
+        condition: service_started
+      seeder:
+        condition: service_completed_successfully
 
   seeder:
     <<: *app
@@ -125,6 +140,9 @@ services:
     restart: on-failure
     networks:
       - backend
+    depends_on:
+      db:
+        condition: service_healthy
 
   hocuspocus:
     image: openproject/hocuspocus:17.9.6
