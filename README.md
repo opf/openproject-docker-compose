@@ -240,7 +240,7 @@ worker:
 
 The database now defaults to `pgvector/pgvector:pg18-bookworm`. Fresh databases enable `vector` automatically. Existing databases require an explicit major-version upgrade; changing the image tag does not upgrade their data.
 
-Follow the [PostgreSQL 18 migration guide](https://www.openproject.org/docs/installation-and-operations/misc/migration-to-postgresql18/) before updating. Stop application writers before the final dump, restore into new storage, and retain the old database until verification succeeds.
+Follow the [PostgreSQL 18 migration guide](https://www.openproject.org/docs/installation-and-operations/misc/migration-to-postgresql18/) before updating.
 
 The host-side `PGDATA` setting still selects the persistent volume or directory. The container mount is now `/var/lib/postgresql`, with the cluster stored in `18/docker` below it.
 
@@ -254,4 +254,4 @@ services:
       - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
 ```
 
-This retains the previous image and storage layout. The version variable alone does not restore the old layout. To add pgvector to an existing PostgreSQL 17 installation, back up first, select `pgvector/pgvector:pg17-bookworm` in this override, check locale/collation compatibility, and activate the extension manually as described in the guide.
+This retains the previous image and storage layout. The version variable alone does not restore the old layout. See the migration guide for adding pgvector to an existing database.
