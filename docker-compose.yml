@@ -33,17 +33,12 @@ x-op-app: &app
 
 services:
   db:
-    # The default here should really be 17 but is still 13 as to not break existing setups.
-    # New installations using the provided .env.example will use 17 to begin with.
-    # The default here will change to 17 as well with the next major update (18).
-    #
-    # Refer to the docs on how to upgrade to postgres 17 before then:
-    #   https://www.openproject.org/docs/installation-and-operations/misc/migration-to-postgresql17/
-    image: postgres:${POSTGRES_VERSION:-13}
+    image: pgvector/pgvector:pg${POSTGRES_VERSION:-18}-bookworm
     <<: *restart_policy
     stop_grace_period: "3s"
     volumes:
-      - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
+      - "${PGDATA:-pgdata}:/var/lib/postgresql"
+      - "./postgres/init-vector.sh:/docker-entrypoint-initdb.d/vector.sh:ro"
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-p4ssw0rd}
       POSTGRES_DB: openproject
