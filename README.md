@@ -71,6 +71,18 @@ When running it in *localhost* it's necessary to make a few adjustments:
 2. Define the `OPENPROJECT_HOST__NAME`, and the `COLLABORATIVE_SERVER_URL` in your .env file (you can look at .env.example for reference)
 3. Restart the containers
 
+### Live updates
+
+From OpenProject 18 on, some pages, such as the meeting agenda, are updated in real time through the
+[AnyCable](https://docs.anycable.io) server in the `anycable` service, which is enabled by default. Without it, these pages keep checking for changes periodically.
+
+> Important! Make sure to override the default secret by setting the `ANYCABLE_SECRET` variable, e.g. to the output of `openssl rand -hex 32`.
+
+Browsers connect to it through the proxy, over WebSocket on `/cable`, falling back to server-sent events on `/events`.
+If a reverse proxy in front of the stack does not pass WebSockets through, pages still update, but over `/events`.
+The `/_anycable` endpoint, which the `anycable` service calls on `web` directly, is blocked on the proxy and should
+not be reachable from the internet.
+
 ### HTTPS/SSL
 
 By default OpenProject starts with the HTTPS option **enabled**, but it **does not** handle SSL termination itself. This
