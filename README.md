@@ -235,3 +235,23 @@ worker:
   dns:
     - "Your DNS IP" # OR add a public DNS resolver like 8.8.8.8
 ```
+
+## PostgreSQL 18 upgrade
+
+The database now defaults to `pgvector/pgvector:pg18-bookworm`. Fresh databases enable `vector` automatically. Existing databases require an explicit major-version upgrade; changing the image tag does not upgrade their data.
+
+Follow the [PostgreSQL 18 migration guide](https://www.openproject.org/docs/installation-and-operations/misc/migration-to-postgresql18/) before updating.
+
+The host-side `PGDATA` setting still selects the persistent volume or directory. The container mount is now `/var/lib/postgresql`, with the cluster stored in `18/docker` below it.
+
+To retain an existing PostgreSQL 17 database, set `POSTGRES_VERSION=17` and add this `docker-compose.override.yml` (Compose 2.24.4 or newer):
+
+```yaml
+services:
+  db:
+    image: postgres:17
+    volumes: !override
+      - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
+```
+
+This retains the previous image and storage layout. The version variable alone does not restore the old layout. See the migration guide for adding pgvector to an existing database.
