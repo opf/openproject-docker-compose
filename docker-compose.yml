@@ -45,8 +45,9 @@ services:
     volumes:
       - "${PGDATA:-pgdata}:/var/lib/postgresql/data"
     environment:
+      POSTGRES_DB: ${POSTGRES_DB:-openproject}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-p4ssw0rd}
-      POSTGRES_DB: openproject
     networks:
       - backend
 
