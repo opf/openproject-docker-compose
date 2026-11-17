@@ -61,8 +61,11 @@ services:
       context: ./proxy
       args:
         APP_HOST: web
+        TAG: ${TAG:-17-slim}
     image: openproject/proxy
     <<: *restart_policy
+    environment:
+      OPENPROJECT_RAILS__RELATIVE__URL__ROOT: "${OPENPROJECT_RAILS__RELATIVE__URL__ROOT:-}"
     ports:
       - "${PORT:-8080}:80"
     depends_on:
