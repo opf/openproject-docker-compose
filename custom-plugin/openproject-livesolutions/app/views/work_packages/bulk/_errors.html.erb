@@ -1,0 +1,65 @@
+<%
+  # Live Solutions patch for OpenProject 17.6.0 Community Edition.
+  # Root cause: when duplicating work packages across projects, a validation
+  # failure leaves the copy result as an unpersisted WorkPackage with id=nil.
+  # The upstream _errors.html.erb partial unconditionally calls
+  # `work_package_path(wp)` on that unpersisted record, which raises
+  # ActionView::Template::Error because the `work_packages#show` route requires
+  # a non-nil :id constraint. This turns a user-fixable validation error into
+  # a generic 500 page.
+  #
+  # Fix: only render a link to the work package when it has been persisted
+  # (wp.id present). Otherwise display the formatted/source ID as plain text.
+  # The source work package (when available) is still shown so the user knows
+  # which record failed.
+  erroneous_results = service_result.results_with_errors(include_self: false)
+  error_count = erroneous_results.count
+  total_count = service_result.dependent_results.map(&:result).uniq.count
+  selected_count = selected_work_packages.count
+  selected_ids = selected_work_packages.map(&:id)
+  source_ids = erroneous_results.map { |call| call.state.copied_from_work_package_id }.compact.uniq
+  source_work_packages_by_id = source_ids.any? ? WorkPackage.visible.where_display_id_in(*source_ids).index_by(&:id) : {}
+%>
+
+<% if total_count - error_count == 0 %>
+  <%= t(
+        "work_packages.bulk.none_could_be_saved",
+        total: total_count
+      ) %>
+<% else %>
+  <%= t(
+        "work_packages.bulk.x_out_of_y_could_be_saved",
+        failing: error_count,
+        total: total_count,
+        success: total_count - error_count
+      ) %>
+
+  <%= t("work_packages.bulk.could_not_be_saved") %>
+<% end %>
+
+<% if selected_count < total_count %>
+  <%= t(
+        "work_packages.bulk.selected_because_descendants",
+        total: total_count,
+        selected: selected_count
+      ) %>
+<% end %>
+
+<ul>
+  <% erroneous_results.each do |call| %>
+    <% source_id = call.state.copied_from_work_package_id %>
+    <% wp = source_id ? source_work_packages_by_id[source_id] : call.result %>
+    <% wp_id = wp&.id || source_id || call.result&.id %>
+
+    <li>
+      <% if wp&.persisted? %>
+        <%= link_to wp.formatted_id || "##{wp_id}", work_package_path(wp) %><%= selected_ids.include?(wp_id) ? "" : " (#{I18n.t('work_packages.bulk.descendant')})" %>:
+      <% else %>
+        <span class="op-uc-link">
+          <%= wp&.formatted_id || "##{wp_id}" %><%= selected_ids.include?(wp_id) ? "" : " (#{I18n.t('work_packages.bulk.descendant')})" %>:
+        </span>
+      <% end %>
+      <%= safe_join call.errors.full_messages, " " %>
+    </li>
+  <% end %>
+</ul>
