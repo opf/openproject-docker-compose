@@ -1,7 +1,5 @@
-:80 {
-    reverse_proxy /hocuspocus* hocuspocus:1234
-
-    reverse_proxy * http://${APP_HOST}:8080 {
+(openproject) {
+    reverse_proxy http://${APP_HOST}:8080 {
         # The following directives are needed to make the proxy forward explicitly the X-Forwarded-* headers. If unset,
         # Caddy will reset them. See: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy#defaults
         # This is needed, if you are using a reverse proxy in front of the compose stack and Caddy is NOT your first
@@ -12,8 +10,37 @@
         header_up X-Forwarded-Proto {header.X-Forwarded-Proto}
         header_up X-Forwarded-For {header.X-Forwarded-For}
     }
+}
 
-    file_server
+:80 {
+    handle /hocuspocus* {
+        reverse_proxy hocuspocus:1234
+    }
+
+    handle_path {$OPENPROJECT_RAILS__RELATIVE__URL__ROOT}/assets/* {
+        @asset file {
+            root /srv/assets
+        }
+
+        handle @asset {
+            root * /srv/assets
+            @hashed not path /frontend/assets/*
+            header @hashed Cache-Control "public, max-age=31536000, immutable"
+            header /frontend/assets/* Cache-Control "public, max-age=31536000"
+            file_server {
+                precompressed br gzip
+            }
+        }
+
+        handle {
+            rewrite * {http.request.orig_uri}
+            import openproject
+        }
+    }
+
+    handle {
+        import openproject
+    }
 
     log
 }
