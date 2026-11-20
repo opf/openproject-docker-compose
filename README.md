@@ -32,13 +32,13 @@ And that you have the correct instructions.
 
 Linux:
 
-```bash
+```shell
 sudo chown 1000:1000 -R /var/openproject/assets
 ```
 
 Mac OS X
 
-```zsh
+```shell
 sudo chown 501:20 -R /var/openproject/assets
 ```
 
