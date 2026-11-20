@@ -36,7 +36,7 @@ Linux:
 sudo chown 1000:1000 -R /var/openproject/assets
 ```
 
-Mac OS X
+Mac OS X:
 
 ```shell
 sudo chown 501:20 -R /var/openproject/assets
