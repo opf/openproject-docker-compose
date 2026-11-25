@@ -1,11 +1,13 @@
-FROM debian:12
+FROM postgres:17-bookworm
 
-RUN apt-get update -qq && apt-get install wget gnupg2 -y && rm -rf /var/lib/apt/lists/*
-RUN wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-RUN apt-get update -qq && apt-get install postgresql-9.6 postgresql-10 postgresql-13 -y && rm -rf /var/lib/apt/lists/*
-RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+# Install rsync and compression tools useful for upgrade/restore, plus any PG
+# client version we might need if we ever have to convert PG 13 -> 17 in-place.
+RUN apt-get update -qq \
+    && apt-get install -y --no-install-recommends \
+       rsync wget ca-certificates locales \
+    && rm -rf /var/lib/apt/lists/*
 
+# Keep the same locale the upstream Postgres image already sets.
 ENV LANG en_US.utf8
 
 ADD . /control
